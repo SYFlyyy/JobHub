@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shaoyafan.jobhubbackend.mapper.ApplicationInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.shaoyafan.jobhubbackend.model.domain.ApplicationInfo">
+            <id property="id" column="id" />
+            <result property="userId" column="user_id" />
+            <result property="gender" column="gender" />
+            <result property="birthDate" column="birth_date" />
+            <result property="phone" column="phone" />
+            <result property="email" column="email" />
+            <result property="address" column="address" />
+            <result property="school" column="school" />
+            <result property="major" column="major" />
+            <result property="graduation" column="graduation" />
+            <result property="honor" column="honor" />
+            <result property="skill" column="skill" />
+            <result property="projectExperience" column="project_experience" />
+            <result property="workExperience" column="work_experience" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,gender,birth_date,phone,email,
+        address,school,major,graduation,honor,
+        skill,project_experience,work_experience,create_time,update_time
+    </sql>
+</mapper>

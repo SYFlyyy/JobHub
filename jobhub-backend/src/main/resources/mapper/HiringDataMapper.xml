@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shaoyafan.jobhubbackend.mapper.HiringDataMapper">
+
+    <resultMap id="BaseResultMap" type="com.shaoyafan.jobhubbackend.model.domain.HiringData">
+            <id property="id" column="id" />
+            <result property="jobId" column="job_id" />
+            <result property="viewCount" column="view_count" />
+            <result property="applicationCount" column="application_count" />
+            <result property="favoriteCount" column="favorite_count" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,job_id,view_count,application_count,favorite_count,create_time,
+        update_time
+    </sql>
+</mapper>
