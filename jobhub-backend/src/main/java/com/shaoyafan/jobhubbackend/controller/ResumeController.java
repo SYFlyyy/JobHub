@@ -56,4 +56,18 @@ public class ResumeController {
     public ResponseEntity<org.springframework.core.io.Resource> downloadResume(@RequestBody UserIdRequest userIdRequest) {
         return resumeService.downloadResume(userIdRequest);
     }
+
+    /**
+     * 删除简历附件
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/delete")
+    @AuthCheck(mustRole = 1)
+    @ApiOperation("删除简历附件")
+    public BaseResponse<Boolean> deleteResume(HttpServletRequest request) {
+        Boolean result = resumeService.deleteResume(request);
+        return ResultUtils.success(result);
+    }
 }

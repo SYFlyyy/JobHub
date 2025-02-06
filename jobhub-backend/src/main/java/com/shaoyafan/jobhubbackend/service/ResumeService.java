@@ -34,4 +34,12 @@ public interface ResumeService extends IService<Resume> {
      * @return
      */
     ResponseEntity<Resource> downloadResume(UserIdRequest userIdRequest);
+
+    /**
+     * 逻辑删除简历附件
+     *
+     * @param request
+     * @return
+     */
+    Boolean deleteResume(HttpServletRequest request);
 }

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 /**
 * @author SYF
@@ -98,6 +99,8 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
                 existResume.setFileName(fileName);
                 existResume.setFilePath(filePath.toString());
                 existResume.setFileType(contentType);
+                // 设置为正常状态
+                existResume.setStatus(StatusConstant.NORMAL);
                 boolean result = this.updateById(existResume);
                 if (!result) {
                     throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传文件失败");
@@ -116,6 +119,9 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
         Resume resume = this.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
         if (resume == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户未上传简历附件");
+        }
+        if (Objects.equals(resume.getStatus(), StatusConstant.DISABLED)) {
+            throw new BusinessException(ErrorCode.STATE_ERROR, "用户已删除简历附件");
         }
         try {
             // 构建文件路径
@@ -145,6 +151,25 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "下载文件失败");
         }
+    }
+
+    @Override
+    public Boolean deleteResume(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        Long userId = loginUser.getId();
+        Resume resume = this.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
+        if (resume == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户未上传简历附件");
+        }
+        if (Objects.equals(resume.getStatus(), StatusConstant.DISABLED)) {
+            throw new BusinessException(ErrorCode.STATE_ERROR, "用户已删除简历附件");
+        }
+        resume.setStatus(StatusConstant.DISABLED);
+        boolean result = this.updateById(resume);
+        if (!result) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+        }
+        return true;
     }
 }
 
