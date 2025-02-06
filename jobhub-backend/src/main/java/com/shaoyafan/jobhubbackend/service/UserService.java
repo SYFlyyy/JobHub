@@ -3,10 +3,7 @@ package com.shaoyafan.jobhubbackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.shaoyafan.jobhubbackend.model.dto.user.UserLoginRequest;
-import com.shaoyafan.jobhubbackend.model.dto.user.UserQueryRequest;
-import com.shaoyafan.jobhubbackend.model.dto.user.UserRegisterRequest;
-import com.shaoyafan.jobhubbackend.model.dto.user.UserUpdateMyRequest;
+import com.shaoyafan.jobhubbackend.model.dto.user.*;
 import com.shaoyafan.jobhubbackend.model.vo.LoginUserVO;
 import com.shaoyafan.jobhubbackend.model.vo.UserVO;
 import org.springframework.http.HttpRequest;
@@ -63,6 +60,15 @@ public interface UserService extends IService<User> {
      * @return
      */
     Boolean updateMyUser(UserUpdateMyRequest userUpdateMyRequest, HttpServletRequest request);
+
+    /**
+     * 更新密码
+     *
+     * @param userUpdatePwdRequest
+     * @param request
+     * @return
+     */
+    Boolean updatePassword(UserUpdatePwdRequest userUpdatePwdRequest, HttpServletRequest request);
 
     /**
      * 审核用户

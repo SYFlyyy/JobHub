@@ -121,6 +121,24 @@ public class UserController {
     }
 
     /**
+     * 更新密码
+     *
+     * @param userUpdatePwdRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/update/pwd")
+    @ApiOperation("更新密码")
+    public BaseResponse<Boolean> updatePassword(@RequestBody UserUpdatePwdRequest userUpdatePwdRequest,
+                                                HttpServletRequest request) {
+        if (userUpdatePwdRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        boolean result = userService.updatePassword(userUpdatePwdRequest, request);
+        return ResultUtils.success(result);
+    }
+
+    /**
      * 分页获取用户封装列表
      *
      * @param userQueryRequest

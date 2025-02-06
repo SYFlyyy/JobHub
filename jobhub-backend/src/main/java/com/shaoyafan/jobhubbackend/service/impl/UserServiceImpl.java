@@ -9,10 +9,7 @@ import com.shaoyafan.jobhubbackend.constant.RoleConstant;
 import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.User;
-import com.shaoyafan.jobhubbackend.model.dto.user.UserLoginRequest;
-import com.shaoyafan.jobhubbackend.model.dto.user.UserQueryRequest;
-import com.shaoyafan.jobhubbackend.model.dto.user.UserRegisterRequest;
-import com.shaoyafan.jobhubbackend.model.dto.user.UserUpdateMyRequest;
+import com.shaoyafan.jobhubbackend.model.dto.user.*;
 import com.shaoyafan.jobhubbackend.model.vo.LoginUserVO;
 import com.shaoyafan.jobhubbackend.model.vo.UserVO;
 import com.shaoyafan.jobhubbackend.service.UserService;
@@ -169,6 +166,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         BeanUtils.copyProperties(userUpdateMyRequest, user);
         user.setId(loginUser.getId());
         boolean result = this.updateById(user);
+        if (!result) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean updatePassword(UserUpdatePwdRequest userUpdatePwdRequest, HttpServletRequest request) {
+        String oldPassword = userUpdatePwdRequest.getOldPassword();
+        // 旧密码加密
+        String oldEncryptPassword = DigestUtils.md5DigestAsHex((SALT + oldPassword).getBytes());
+        User loginUser = getLoginUser(request);
+        if (!Objects.equals(loginUser.getPassword(), oldEncryptPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "原密码错误");
+        }
+        String newPassword = userUpdatePwdRequest.getNewPassword();
+        String checkPassword = userUpdatePwdRequest.getCheckPassword();
+        if (StringUtils.isAnyBlank(newPassword, checkPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "新密码或确认密码为空");
+        }
+        if (newPassword.length() < 8 || checkPassword.length() < 8) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "新密码过短");
+        }
+        if (!Objects.equals(newPassword, checkPassword)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "两次输入的密码不一致");
+        }
+        // 新密码加密
+        String encryptPassword = DigestUtils.md5DigestAsHex((SALT + newPassword).getBytes());
+        loginUser.setPassword(encryptPassword);
+        boolean result = this.updateById(loginUser);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
