@@ -1,31 +1,18 @@
-package com.shaoyafan.jobhubbackend.model.domain;
+package com.shaoyafan.jobhubbackend.model.dto.applicationInfo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
- * 在线简历表
- * @TableName application_info
+ * 在线简历更新请求
+ *
+ * @author SYF
  */
-@TableName(value ="application_info")
 @Data
-public class ApplicationInfo implements Serializable {
-
-    /**
-     * id
-     */
-    @TableId
-    private Long id;
-
-    /**
-     * 关联user表id
-     */
-    private Long userId;
+public class ApplicationInfoUpdateRequest implements Serializable {
 
     /**
      * 性别（0-男、1-女）
@@ -35,6 +22,7 @@ public class ApplicationInfo implements Serializable {
     /**
      * 出生日期
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
 
     /**
@@ -65,6 +53,7 @@ public class ApplicationInfo implements Serializable {
     /**
      * 毕业时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date graduation;
 
     /**
@@ -87,17 +76,5 @@ public class ApplicationInfo implements Serializable {
      */
     private String workExperience;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(update = "now()")
-    private Date updateTime;
-
-    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

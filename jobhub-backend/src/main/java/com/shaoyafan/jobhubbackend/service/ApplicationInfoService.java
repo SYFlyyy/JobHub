@@ -2,6 +2,11 @@ package com.shaoyafan.jobhubbackend.service;
 
 import com.shaoyafan.jobhubbackend.model.domain.ApplicationInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shaoyafan.jobhubbackend.model.dto.applicationInfo.ApplicationInfoAddRequest;
+import com.shaoyafan.jobhubbackend.model.dto.applicationInfo.ApplicationInfoUpdateRequest;
+import com.shaoyafan.jobhubbackend.model.dto.user.UserIdRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
 * @author SYF
@@ -10,4 +15,37 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ApplicationInfoService extends IService<ApplicationInfo> {
 
+    /**
+     * 新增在线简历
+     *
+     * @param applicationInfoAddRequest
+     * @param request
+     * @return
+     */
+    Long addApplicationInfo(ApplicationInfoAddRequest applicationInfoAddRequest, HttpServletRequest request);
+
+    /**
+     * 更新在线简历
+     *
+     * @param applicationInfoUpdateRequest
+     * @param request
+     * @return
+     */
+    Boolean updateApplicationInfo(ApplicationInfoUpdateRequest applicationInfoUpdateRequest, HttpServletRequest request);
+
+    /**
+     * 查看自己在线简历
+     *
+     * @param request
+     * @return
+     */
+    ApplicationInfo getOwnApplicationInfo(HttpServletRequest request);
+
+    /**
+     * 根据 userId 查看在线简历
+     *
+     * @param userIdRequest
+     * @return
+     */
+    ApplicationInfo getApplicationInfoByUserId(UserIdRequest userIdRequest);
 }
