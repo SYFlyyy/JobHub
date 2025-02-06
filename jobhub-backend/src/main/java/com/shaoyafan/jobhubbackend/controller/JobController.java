@@ -17,6 +17,7 @@ import com.shaoyafan.jobhubbackend.service.JobCollectionService;
 import com.shaoyafan.jobhubbackend.service.JobService;
 import com.shaoyafan.jobhubbackend.service.UserService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/job")
 @Slf4j
+@Api(tags = "职位接口")
 public class JobController {
 
     @Resource

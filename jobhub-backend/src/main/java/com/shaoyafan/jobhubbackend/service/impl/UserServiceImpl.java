@@ -14,6 +14,7 @@ import com.shaoyafan.jobhubbackend.model.vo.LoginUserVO;
 import com.shaoyafan.jobhubbackend.model.vo.UserVO;
 import com.shaoyafan.jobhubbackend.service.UserService;
 import com.shaoyafan.jobhubbackend.mapper.UserMapper;
+import com.shaoyafan.jobhubbackend.utils.EmailUtils;
 import com.shaoyafan.jobhubbackend.utils.PhoneNumberUtils;
 import com.shaoyafan.jobhubbackend.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -161,6 +162,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String phone = userUpdateMyRequest.getPhone();
         if (StringUtils.isNotBlank(phone) && !PhoneNumberUtils.isValidChinesePhoneNumber(phone)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "手机号格式错误");
+        }
+        String email = userUpdateMyRequest.getEmail();
+        if (StringUtils.isNotBlank(email) && !EmailUtils.isValidEmail(email)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "邮箱格式错误");
         }
         User user = new User();
         BeanUtils.copyProperties(userUpdateMyRequest, user);

@@ -9,6 +9,7 @@ import com.shaoyafan.jobhubbackend.model.domain.Company;
 import com.shaoyafan.jobhubbackend.model.dto.company.*;
 import com.shaoyafan.jobhubbackend.service.CompanyService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/company")
 @Slf4j
+@Api(tags = "企业接口")
 public class CompanyController {
 
     @Resource

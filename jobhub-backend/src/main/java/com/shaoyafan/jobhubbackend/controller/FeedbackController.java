@@ -10,6 +10,7 @@ import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackAddRequest;
 import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackQueryRequest;
 import com.shaoyafan.jobhubbackend.service.FeedbackService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/feedback")
 @Slf4j
+@Api(tags = "用户反馈接口")
 public class FeedbackController {
 
     @Resource

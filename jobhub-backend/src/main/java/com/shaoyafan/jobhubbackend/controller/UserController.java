@@ -11,6 +11,7 @@ import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.shaoyafan.jobhubbackend.model.vo.LoginUserVO;
 import com.shaoyafan.jobhubbackend.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @Slf4j
+@Api(tags = "用户接口")
 public class UserController {
 
     @Resource

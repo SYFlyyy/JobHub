@@ -12,6 +12,7 @@ import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeUpdateRequest;
 import com.shaoyafan.jobhubbackend.service.NoticeService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/notice")
 @Slf4j
+@Api(tags = "公告接口")
 public class NoticeController {
 
     @Resource
