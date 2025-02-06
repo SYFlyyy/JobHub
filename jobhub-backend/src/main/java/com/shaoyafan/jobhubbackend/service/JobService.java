@@ -11,6 +11,8 @@ import com.shaoyafan.jobhubbackend.model.dto.job.JobUpdateRequest;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * 职位服务
+ *
 * @author SYF
 * @description 针对表【job(职位表)】的数据库操作Service
 * @createDate 2025-01-26 16:39:45
