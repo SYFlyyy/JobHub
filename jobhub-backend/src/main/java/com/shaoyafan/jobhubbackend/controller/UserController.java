@@ -185,14 +185,14 @@ public class UserController {
     }
 
     /**
-     * 冻结用户
+     * 用户冻结
      *
      * @param userIdRequest
      * @return
      */
     @PostMapping("/freeze")
     @AuthCheck(mustRole = 0)
-    @ApiOperation("冻结用户")
+    @ApiOperation("用户冻结")
     public BaseResponse<Boolean> freezeUser(@RequestBody UserIdRequest userIdRequest) {
         if (userIdRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

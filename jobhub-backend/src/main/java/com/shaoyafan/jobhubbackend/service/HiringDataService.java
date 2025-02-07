@@ -1,6 +1,5 @@
 package com.shaoyafan.jobhubbackend.service;
 
-import com.shaoyafan.jobhubbackend.model.domain.HiringData;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
