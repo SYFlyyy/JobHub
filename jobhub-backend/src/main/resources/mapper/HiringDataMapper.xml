@@ -7,15 +7,16 @@
     <resultMap id="BaseResultMap" type="com.shaoyafan.jobhubbackend.model.domain.HiringData">
             <id property="id" column="id" />
             <result property="jobId" column="job_id" />
-            <result property="viewCount" column="view_count" />
             <result property="applicationCount" column="application_count" />
             <result property="favoriteCount" column="favorite_count" />
+            <result property="interviewCount" column="interview_count" />
+            <result property="hiredCount" column="hired_count" />
             <result property="createTime" column="create_time" />
             <result property="updateTime" column="update_time" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,job_id,view_count,application_count,favorite_count,create_time,
-        update_time
+        id,job_id,application_count,favorite_count,interview_count,hired_count,
+        create_time,update_time
     </sql>
 </mapper>

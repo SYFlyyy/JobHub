@@ -25,11 +25,6 @@ public class HiringData {
     private Long jobId;
 
     /**
-     * 查看量
-     */
-    private Long viewCount;
-
-    /**
      * 投递量
      */
     private Long applicationCount;
@@ -38,6 +33,16 @@ public class HiringData {
      * 收藏量
      */
     private Long favoriteCount;
+
+    /**
+     * 面试候选人数量
+     */
+    private Long interviewCount;
+
+    /**
+     * 录用数量
+     */
+    private Long hiredCount;
 
     /**
      * 创建时间
