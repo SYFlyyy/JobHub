@@ -8,8 +8,10 @@ import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.ResumeRecord;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
+import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
 import com.shaoyafan.jobhubbackend.service.ResumeRecordService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +52,23 @@ public class ResumeRecordController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Boolean result = resumeRecordService.addResumeRecord(jobIdRequest, request);
+        return ResultUtils.success(result);
+    }
+
+    /**
+     * 更新招聘记录状态
+     *
+     * @param resumeRecordUpdateStatusRequest
+     * @return
+     */
+    @PostMapping("/update/status")
+    @AuthCheck(mustRole = 2)
+    @ApiOperation("更新招聘记录状态")
+    public BaseResponse<Boolean> updateResumeRecordStatus(@RequestBody ResumeRecordUpdateStatusRequest resumeRecordUpdateStatusRequest) {
+        if (resumeRecordUpdateStatusRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Boolean result = resumeRecordService.updateResumeRecordStatus(resumeRecordUpdateStatusRequest);
         return ResultUtils.success(result);
     }
 

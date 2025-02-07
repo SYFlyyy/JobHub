@@ -12,6 +12,7 @@ import com.shaoyafan.jobhubbackend.model.domain.Resume;
 import com.shaoyafan.jobhubbackend.model.domain.ResumeRecord;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
+import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
 import com.shaoyafan.jobhubbackend.service.JobService;
 import com.shaoyafan.jobhubbackend.service.ResumeRecordService;
 import com.shaoyafan.jobhubbackend.mapper.ResumeRecordMapper;
@@ -68,6 +69,28 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         // 默认状态为已投递
         resumeRecord.setStatus(HiringStatusConstant.APPLIED);
         boolean result = this.save(resumeRecord);
+        if (!result) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean updateResumeRecordStatus(ResumeRecordUpdateStatusRequest resumeRecordUpdateStatusRequest) {
+        Long resumeRecordIdRequestId = resumeRecordUpdateStatusRequest.getId();
+        ResumeRecord resumeRecord = this.getById(resumeRecordIdRequestId);
+        if (resumeRecord == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        Integer status = resumeRecordUpdateStatusRequest.getStatus();
+        if (Objects.equals(resumeRecord.getStatus(), HiringStatusConstant.FINISHED)) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前流程已结束");
+        }
+        if (Objects.equals(status, HiringStatusConstant.APPLIED)) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "不能修改为已投递状态");
+        }
+        resumeRecord.setStatus(status);
+        boolean result = this.updateById(resumeRecord);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
