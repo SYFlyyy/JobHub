@@ -10,4 +10,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PlatformDataService extends IService<PlatformData> {
 
+    /**
+     * 获取平台数据
+     *
+     * @return
+     */
+    PlatformData getPlatformData();
+
 }

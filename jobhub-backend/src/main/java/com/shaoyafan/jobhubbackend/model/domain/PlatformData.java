@@ -1,9 +1,10 @@
 package com.shaoyafan.jobhubbackend.model.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
@@ -13,7 +14,7 @@ import lombok.Data;
  */
 @TableName(value ="platform_data")
 @Data
-public class PlatformData {
+public class PlatformData implements Serializable {
     /**
      * id
      */
@@ -23,7 +24,7 @@ public class PlatformData {
     /**
      * 求职者数量
      */
-    private Long applicationCount;
+    private Long candidateCount;
 
     /**
      * 招聘者数量
@@ -48,5 +49,9 @@ public class PlatformData {
     /**
      * 更新时间
      */
+    @TableField(update = "now()")
     private Date updateTime;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
 }
