@@ -1,7 +1,5 @@
 package com.shaoyafan.jobhubbackend.model.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -22,5 +20,5 @@ public class HiringStatus {
     /**
      * 招聘状态
      */
-    private Object status;
+    private Integer status;
 }

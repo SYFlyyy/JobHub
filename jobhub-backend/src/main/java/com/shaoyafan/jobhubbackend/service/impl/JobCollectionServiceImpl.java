@@ -35,8 +35,7 @@ public class JobCollectionServiceImpl extends ServiceImpl<JobCollectionMapper, J
 
     @Override
     public Boolean addJobCollection(JobIdRequest jobIdRequest, HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        Long userId = loginUser.getId();
+        Long userId = userService.getLoginUser(request).getId();
         Long jobId = jobIdRequest.getId();
         Job job = jobService.getById(jobId);
         if (job == null) {
@@ -63,8 +62,7 @@ public class JobCollectionServiceImpl extends ServiceImpl<JobCollectionMapper, J
 
     @Override
     public Boolean cancelJobCollection(JobIdRequest jobIdRequest, HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        Long userId = loginUser.getId();
+        Long userId = userService.getLoginUser(request).getId();
         Long jobId = jobIdRequest.getId();
         QueryWrapper<JobCollection> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId).eq("job_id", jobId);

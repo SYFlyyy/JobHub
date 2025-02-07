@@ -33,8 +33,7 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbacckMapper, Feedback>
 
     @Override
     public Long addFeedback(FeedbackAddRequest feedbackAddRequest, HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        Long userId = loginUser.getId();
+        Long userId = userService.getLoginUser(request).getId();
         String contact = feedbackAddRequest.getContact();
         String content = feedbackAddRequest.getContent();
         if (StringUtils.isBlank(content)) {

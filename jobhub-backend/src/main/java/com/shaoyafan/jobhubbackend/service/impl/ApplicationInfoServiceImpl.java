@@ -42,6 +42,10 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
         if (existApplicationInfo != null) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前用户已存在在线简历");
         }
+        String name = applicationInfoAddRequest.getName();
+        if (StringUtils.isBlank(name)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "姓名不能为空");
+        }
         String phone = applicationInfoAddRequest.getPhone();
         if (StringUtils.isNotBlank(phone) && !PhoneNumberUtils.isValidChinesePhoneNumber(phone)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "手机号格式错误");
@@ -69,6 +73,10 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
         if (applicationInfo == null) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前用户没有在线简历");
         }
+        String name = applicationInfoUpdateRequest.getName();
+        if (StringUtils.isBlank(name)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "姓名不能为空");
+        }
         String phone = applicationInfoUpdateRequest.getPhone();
         if (StringUtils.isNotBlank(phone) && !PhoneNumberUtils.isValidChinesePhoneNumber(phone)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "手机号格式错误");
@@ -87,8 +95,7 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
 
     @Override
     public ApplicationInfo getOwnApplicationInfo(HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        Long userId = loginUser.getId();
+        Long userId = userService.getLoginUser(request).getId();
         ApplicationInfo applicationInfo = this.getOne(new QueryWrapper<ApplicationInfo>().eq("user_id", userId));
         if (applicationInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "当前用户暂无在线简历");

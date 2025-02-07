@@ -53,5 +53,9 @@ public class Resume {
     /**
      * 更新时间
      */
+    @TableField(update = "now()")
     private Date updateTime;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
 }

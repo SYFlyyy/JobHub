@@ -1,9 +1,10 @@
 package com.shaoyafan.jobhubbackend.model.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 
@@ -13,7 +14,8 @@ import lombok.Data;
  */
 @TableName(value ="resume_record")
 @Data
-public class ResumeRecord {
+public class ResumeRecord implements Serializable {
+
     /**
      * id
      */
@@ -38,7 +40,7 @@ public class ResumeRecord {
     /**
      * 招聘状态
      */
-    private Object status;
+    private Integer status;
 
     /**
      * 创建时间
@@ -48,5 +50,9 @@ public class ResumeRecord {
     /**
      * 更新时间
      */
+    @TableField(update = "now()")
     private Date updateTime;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
 }

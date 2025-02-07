@@ -15,6 +15,11 @@ import java.util.Date;
 public class ApplicationInfoAddRequest implements Serializable {
 
     /**
+     * 姓名
+     */
+    private String name;
+
+    /**
      * 性别（0-男、1-女）
      */
     private Integer gender;

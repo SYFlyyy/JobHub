@@ -45,8 +45,7 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
     @Override
     @Transactional
     public Boolean uploadResume(MultipartFile file, HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        Long userId = loginUser.getId();
+        Long userId = userService.getLoginUser(request).getId();
         try {
             // 检查文件是否为空
             if (file.isEmpty()) {
@@ -155,8 +154,7 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
 
     @Override
     public Boolean deleteResume(HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        Long userId = loginUser.getId();
+        Long userId = userService.getLoginUser(request).getId();
         Resume resume = this.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
         if (resume == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户未上传简历附件");
@@ -164,6 +162,7 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
         if (Objects.equals(resume.getStatus(), StatusConstant.DISABLED)) {
             throw new BusinessException(ErrorCode.STATE_ERROR, "用户已删除简历附件");
         }
+        // 逻辑删除文件
         resume.setStatus(StatusConstant.DISABLED);
         boolean result = this.updateById(resume);
         if (!result) {
@@ -172,7 +171,3 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
         return true;
     }
 }
-
-
-
-

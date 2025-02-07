@@ -38,8 +38,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
 
     @Override
     public Long addJob(JobAddRequest jobAddRequest, HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        Long companyId = loginUser.getCompanyId();
+        Long companyId = userService.getLoginUser(request).getCompanyId();
         if (companyId == null) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前用户未绑定企业");
         }

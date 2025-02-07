@@ -28,6 +28,11 @@ public class ApplicationInfo implements Serializable {
     private Long userId;
 
     /**
+     * 姓名
+     */
+    private String name;
+
+    /**
      * 性别（0-男、1-女）
      */
     private Integer gender;
