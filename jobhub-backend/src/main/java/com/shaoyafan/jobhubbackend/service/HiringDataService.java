@@ -1,6 +1,7 @@
 package com.shaoyafan.jobhubbackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shaoyafan.jobhubbackend.model.domain.HiringData;
 
 /**
 * @author SYF

@@ -1,6 +1,8 @@
 package com.shaoyafan.jobhubbackend.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shaoyafan.jobhubbackend.mapper.HiringDataMapper;
+import com.shaoyafan.jobhubbackend.model.domain.HiringData;
 import com.shaoyafan.jobhubbackend.service.HiringDataService;
 import org.springframework.stereotype.Service;
 
