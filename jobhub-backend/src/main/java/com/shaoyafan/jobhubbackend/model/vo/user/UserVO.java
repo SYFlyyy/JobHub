@@ -1,4 +1,4 @@
-package com.shaoyafan.jobhubbackend.model.vo;
+package com.shaoyafan.jobhubbackend.model.vo.user;
 
 import lombok.Data;
 

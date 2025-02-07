@@ -25,6 +25,11 @@ public class JobQueryRequest extends PageRequest implements Serializable {
     private Long companyId;
 
     /**
+     * 企业名称
+     */
+    private String companyName;
+
+    /**
      * 职位名称
      */
     private String name;

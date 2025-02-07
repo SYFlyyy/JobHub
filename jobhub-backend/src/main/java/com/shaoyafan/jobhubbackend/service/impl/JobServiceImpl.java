@@ -6,6 +6,7 @@ import com.shaoyafan.jobhubbackend.common.ErrorCode;
 import com.shaoyafan.jobhubbackend.constant.CommonConstant;
 import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
+import com.shaoyafan.jobhubbackend.model.domain.Company;
 import com.shaoyafan.jobhubbackend.model.domain.Job;
 import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobAddRequest;
@@ -13,6 +14,7 @@ import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobUpdateRequest;
 import com.shaoyafan.jobhubbackend.model.enums.UserRoleEnum;
+import com.shaoyafan.jobhubbackend.service.CompanyService;
 import com.shaoyafan.jobhubbackend.service.JobService;
 import com.shaoyafan.jobhubbackend.mapper.JobMapper;
 import com.shaoyafan.jobhubbackend.service.UserService;
@@ -36,12 +38,20 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
     @Resource
     private UserService userService;
 
+    @Resource
+    private CompanyService companyService;
+
     @Override
     public Long addJob(JobAddRequest jobAddRequest, HttpServletRequest request) {
         Long companyId = userService.getLoginUser(request).getCompanyId();
         if (companyId == null) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前用户未绑定企业");
         }
+        Company company = companyService.getById(companyId);
+        if (company == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "企业不存在");
+        }
+        String companyName = company.getName();
         String name = jobAddRequest.getName();
         if (StringUtils.isBlank(name)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "职位名称不能为空");
@@ -57,6 +67,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         String salary = jobAddRequest.getSalary();
         Job job = new Job();
         job.setCompanyId(companyId);
+        job.setCompanyName(companyName);
         job.setName(name);
         job.setType(type);
         job.setSalary(salary);
@@ -180,6 +191,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         }
         Long id = jobQueryRequest.getId();
         Long companyId = jobQueryRequest.getCompanyId();
+        String companyName = jobQueryRequest.getCompanyName();
         String name = jobQueryRequest.getName();
         Integer type = jobQueryRequest.getType();
         String salary = jobQueryRequest.getSalary();
@@ -190,6 +202,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(id != null, "id", id);
         queryWrapper.eq(companyId != null, "company_id", companyId);
+        queryWrapper.like(StringUtils.isNotBlank(companyName), "company_name", companyName);
         queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
         queryWrapper.eq(type != null, "type", type);
         queryWrapper.like(StringUtils.isNotBlank(salary), "salary", salary);

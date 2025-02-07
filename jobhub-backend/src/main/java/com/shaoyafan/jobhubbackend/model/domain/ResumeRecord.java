@@ -23,7 +23,7 @@ public class ResumeRecord implements Serializable {
     private Long id;
 
     /**
-     * 关联job_info表id
+     * 关联job表id
      */
     private Long jobId;
 

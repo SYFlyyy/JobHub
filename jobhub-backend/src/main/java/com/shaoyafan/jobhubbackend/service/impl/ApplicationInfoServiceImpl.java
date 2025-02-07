@@ -17,6 +17,7 @@ import com.shaoyafan.jobhubbackend.utils.PhoneNumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
     private UserService userService;
 
     @Override
+    @Transactional
     public Long addApplicationInfo(ApplicationInfoAddRequest applicationInfoAddRequest, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         Long userId = loginUser.getId();
@@ -46,6 +48,9 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
         if (StringUtils.isBlank(name)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "姓名不能为空");
         }
+        // 更新用户姓名
+        loginUser.setUsername(name);
+        userService.updateById(loginUser);
         String phone = applicationInfoAddRequest.getPhone();
         if (StringUtils.isNotBlank(phone) && !PhoneNumberUtils.isValidChinesePhoneNumber(phone)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "手机号格式错误");
@@ -77,6 +82,9 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
         if (StringUtils.isBlank(name)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "姓名不能为空");
         }
+        // 更新用户姓名
+        loginUser.setUsername(name);
+        userService.updateById(loginUser);
         String phone = applicationInfoUpdateRequest.getPhone();
         if (StringUtils.isNotBlank(phone) && !PhoneNumberUtils.isValidChinesePhoneNumber(phone)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "手机号格式错误");

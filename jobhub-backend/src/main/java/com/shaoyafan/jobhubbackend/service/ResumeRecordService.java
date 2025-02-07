@@ -1,11 +1,13 @@
 package com.shaoyafan.jobhubbackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shaoyafan.jobhubbackend.model.domain.ResumeRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
+import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +34,14 @@ public interface ResumeRecordService extends IService<ResumeRecord> {
      * @return
      */
     Boolean updateResumeRecordStatus(ResumeRecordUpdateStatusRequest resumeRecordUpdateStatusRequest);
+
+    /**
+     * 获取投递记录视图分页
+     *
+     * @param resumeRecordPage
+     * @return
+     */
+    Page<ResumeRecordVO> getResumeRecordVOPage(Page<ResumeRecord> resumeRecordPage);
 
     /**
      * 获取查询条件

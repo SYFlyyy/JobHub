@@ -9,9 +9,9 @@ import com.shaoyafan.jobhubbackend.model.domain.ResumeRecord;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
+import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
 import com.shaoyafan.jobhubbackend.service.ResumeRecordService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +81,7 @@ public class ResumeRecordController {
     @PostMapping("/list/page")
     @AuthCheck(mustRole = 2)
     @ApiOperation("分页查询投递记录")
-    public BaseResponse<Page<ResumeRecord>> listResumeRecordByPage(@RequestBody ResumeRecordQueryRequest resumeRecordQueryRequest) {
+    public BaseResponse<Page<ResumeRecordVO>> listResumeRecordByPage(@RequestBody ResumeRecordQueryRequest resumeRecordQueryRequest) {
         if (resumeRecordQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -89,7 +89,8 @@ public class ResumeRecordController {
         long size = resumeRecordQueryRequest.getPageSize();
         Page<ResumeRecord> resumeRecordPage = resumeRecordService.page(new Page<>(current, size),
                 resumeRecordService.getQueryWrapper(resumeRecordQueryRequest));
-        return ResultUtils.success(resumeRecordPage);
+        Page<ResumeRecordVO> resumeRecordVOPage = resumeRecordService.getResumeRecordVOPage(resumeRecordPage);
+        return ResultUtils.success(resumeRecordVOPage);
     }
 
 }

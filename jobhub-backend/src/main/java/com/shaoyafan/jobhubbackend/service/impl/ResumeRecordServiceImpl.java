@@ -1,29 +1,33 @@
 package com.shaoyafan.jobhubbackend.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shaoyafan.jobhubbackend.common.ErrorCode;
 import com.shaoyafan.jobhubbackend.constant.CommonConstant;
 import com.shaoyafan.jobhubbackend.constant.HiringStatusConstant;
 import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
+import com.shaoyafan.jobhubbackend.model.domain.ApplicationInfo;
 import com.shaoyafan.jobhubbackend.model.domain.Job;
 import com.shaoyafan.jobhubbackend.model.domain.Resume;
 import com.shaoyafan.jobhubbackend.model.domain.ResumeRecord;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
-import com.shaoyafan.jobhubbackend.service.JobService;
-import com.shaoyafan.jobhubbackend.service.ResumeRecordService;
+import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
+import com.shaoyafan.jobhubbackend.service.*;
 import com.shaoyafan.jobhubbackend.mapper.ResumeRecordMapper;
-import com.shaoyafan.jobhubbackend.service.ResumeService;
-import com.shaoyafan.jobhubbackend.service.UserService;
 import com.shaoyafan.jobhubbackend.utils.SqlUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
 * @author SYF
@@ -42,6 +46,9 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
 
     @Resource
     private ResumeService resumeService;
+
+    @Resource
+    private ApplicationInfoService applicationInfoService;
 
     @Override
     public Boolean addResumeRecord(JobIdRequest jobIdRequest, HttpServletRequest request) {
@@ -96,6 +103,29 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         }
         return true;
     }
+
+    @Override
+    public Page<ResumeRecordVO> getResumeRecordVOPage(Page<ResumeRecord> resumeRecordPage) {
+        List<ResumeRecord> resumeRecordList = resumeRecordPage.getRecords();
+        Page<ResumeRecordVO> resumeRecordVOPage = new Page<>(resumeRecordPage.getCurrent(), resumeRecordPage.getSize());
+        if (CollectionUtil.isEmpty(resumeRecordList)) {
+            return resumeRecordVOPage;
+        }
+        List<ResumeRecordVO> resumeRecordVOList = resumeRecordList.stream()
+                .map(resumeRecord -> {
+                    ResumeRecordVO resumeRecordVO = new ResumeRecordVO();
+                    BeanUtils.copyProperties(resumeRecord, resumeRecordVO);
+                    // 获取求职者姓名
+                    ApplicationInfo applicationInfo = applicationInfoService.getOne(new QueryWrapper<ApplicationInfo>().
+                            eq("user_id", resumeRecord.getUserId()));
+                    if (applicationInfo != null) {
+                        resumeRecordVO.setUserName(applicationInfo.getName());
+                    }
+                    return resumeRecordVO;
+                }).collect(Collectors.toList());
+        return resumeRecordVOPage.setRecords(resumeRecordVOList);
+    }
+
 
     @Override
     public QueryWrapper<ResumeRecord> getQueryWrapper(ResumeRecordQueryRequest resumeRecordQueryRequest) {

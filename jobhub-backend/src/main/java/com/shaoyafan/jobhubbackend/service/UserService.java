@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shaoyafan.jobhubbackend.model.dto.user.*;
-import com.shaoyafan.jobhubbackend.model.vo.LoginUserVO;
-import com.shaoyafan.jobhubbackend.model.vo.UserVO;
-import org.springframework.http.HttpRequest;
+import com.shaoyafan.jobhubbackend.model.vo.user.LoginUserVO;
+import com.shaoyafan.jobhubbackend.model.vo.user.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
