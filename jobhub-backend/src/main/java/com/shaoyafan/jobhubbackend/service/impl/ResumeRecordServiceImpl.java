@@ -17,6 +17,7 @@ import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
 import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
+import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.UserResumeRecordVO;
 import com.shaoyafan.jobhubbackend.service.*;
 import com.shaoyafan.jobhubbackend.mapper.ResumeRecordMapper;
 import com.shaoyafan.jobhubbackend.utils.SqlUtils;
@@ -61,6 +62,14 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
             throw new BusinessException(ErrorCode.STATE_ERROR, "该职位已下线");
         }
         Long userId = userService.getLoginUser(request).getId();
+        ApplicationInfo applicationInfo = applicationInfoService.getOne(new QueryWrapper<ApplicationInfo>().eq("user_id", userId));
+        if (applicationInfo == null) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先完善个人在线简历");
+        }
+        Resume resume = resumeService.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
+        if (resume == null) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先上传个人简历");
+        }
         // 判断是否已经投递过该职位
         ResumeRecord existResumeRecord = this.getOne(new QueryWrapper<ResumeRecord>().eq("job_id", jobId).eq("user_id", userId));
         if (existResumeRecord != null) {
@@ -69,10 +78,7 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         ResumeRecord resumeRecord = new ResumeRecord();
         resumeRecord.setJobId(jobId);
         resumeRecord.setUserId(userId);
-        Resume resume = resumeService.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
-        if (resume != null) {
-            resumeRecord.setResumeId(resume.getId());
-        }
+        resumeRecord.setResumeId(resume.getId());
         // 默认状态为已投递
         resumeRecord.setStatus(HiringStatusConstant.APPLIED);
         boolean result = this.save(resumeRecord);
@@ -126,6 +132,27 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         return resumeRecordVOPage.setRecords(resumeRecordVOList);
     }
 
+    @Override
+    public Page<UserResumeRecordVO> getUserResumeRecordVOPage(Page<ResumeRecord> resumeRecordPage) {
+        List<ResumeRecord> resumeRecordList = resumeRecordPage.getRecords();
+        Page<UserResumeRecordVO> userResumeRecordVOPage = new Page<>(resumeRecordPage.getCurrent(), resumeRecordPage.getSize());
+        if (CollectionUtil.isEmpty(resumeRecordList)) {
+            return userResumeRecordVOPage;
+        }
+        List<UserResumeRecordVO> userResumeRecordVOList = resumeRecordList.stream()
+                .map(resumeRecord -> {
+                    UserResumeRecordVO userResumeRecordVO = new UserResumeRecordVO();
+                    BeanUtils.copyProperties(resumeRecord, userResumeRecordVO);
+                    Job job = jobService.getById(resumeRecord.getJobId());
+                    if (job != null) {
+                        userResumeRecordVO.setCompanyName(job.getCompanyName());
+                        userResumeRecordVO.setJobName(job.getName());
+                        userResumeRecordVO.setSalary(job.getSalary());
+                    }
+                    return userResumeRecordVO;
+                }).collect(Collectors.toList());
+        return userResumeRecordVOPage.setRecords(userResumeRecordVOList);
+    }
 
     @Override
     public QueryWrapper<ResumeRecord> getQueryWrapper(ResumeRecordQueryRequest resumeRecordQueryRequest) {

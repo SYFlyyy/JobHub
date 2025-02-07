@@ -65,6 +65,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "职位详情不能为空");
         }
         String salary = jobAddRequest.getSalary();
+        if (StringUtils.isBlank(salary)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "薪资不能为空");
+        }
         Job job = new Job();
         job.setCompanyId(companyId);
         job.setCompanyName(companyName);

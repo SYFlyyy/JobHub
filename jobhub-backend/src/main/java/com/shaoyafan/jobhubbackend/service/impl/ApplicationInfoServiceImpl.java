@@ -70,6 +70,7 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
     }
 
     @Override
+    @Transactional
     public Boolean updateApplicationInfo(ApplicationInfoUpdateRequest applicationInfoUpdateRequest, HttpServletRequest request) {
         User loginUser = userService.getLoginUser(request);
         Long userId = loginUser.getId();

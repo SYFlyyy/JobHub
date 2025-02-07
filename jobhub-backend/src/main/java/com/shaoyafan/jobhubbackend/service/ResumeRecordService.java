@@ -8,6 +8,7 @@ import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
 import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
+import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.UserResumeRecordVO;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,12 +37,20 @@ public interface ResumeRecordService extends IService<ResumeRecord> {
     Boolean updateResumeRecordStatus(ResumeRecordUpdateStatusRequest resumeRecordUpdateStatusRequest);
 
     /**
-     * 获取投递记录视图分页
+     * 获取投递记录视图列表
      *
      * @param resumeRecordPage
      * @return
      */
     Page<ResumeRecordVO> getResumeRecordVOPage(Page<ResumeRecord> resumeRecordPage);
+
+    /**
+     * 获取求职者投递记录视图列表
+     *
+     * @param resumeRecordPage
+     * @return
+     */
+    Page<UserResumeRecordVO> getUserResumeRecordVOPage(Page<ResumeRecord> resumeRecordPage);
 
     /**
      * 获取查询条件

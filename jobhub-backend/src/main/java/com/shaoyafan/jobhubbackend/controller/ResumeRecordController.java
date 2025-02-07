@@ -10,7 +10,9 @@ import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
 import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
+import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.UserResumeRecordVO;
 import com.shaoyafan.jobhubbackend.service.ResumeRecordService;
+import com.shaoyafan.jobhubbackend.service.UserService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,6 +38,9 @@ public class ResumeRecordController {
 
     @Resource
     private ResumeRecordService resumeRecordService;
+
+    @Resource
+    private UserService userService;
 
     /**
      * 新增投递记录
@@ -73,14 +78,14 @@ public class ResumeRecordController {
     }
 
     /**
-     * 分页查询投递记录
+     * 获取投递记录列表
      *
      * @param resumeRecordQueryRequest
      * @return
      */
     @PostMapping("/list/page")
     @AuthCheck(mustRole = 2)
-    @ApiOperation("分页查询投递记录")
+    @ApiOperation("获取投递记录列表")
     public BaseResponse<Page<ResumeRecordVO>> listResumeRecordByPage(@RequestBody ResumeRecordQueryRequest resumeRecordQueryRequest) {
         if (resumeRecordQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -93,4 +98,25 @@ public class ResumeRecordController {
         return ResultUtils.success(resumeRecordVOPage);
     }
 
+    /**
+     * 获取求职者投递记录列表
+     *
+     * @param resumeRecordQueryRequest
+     * @return
+     */
+    @PostMapping("/list/page/my")
+    @AuthCheck(mustRole = 1)
+    @ApiOperation("获取求职者投递记录列表")
+    public BaseResponse<Page<UserResumeRecordVO>> listMyResumeRecordByPage(@RequestBody ResumeRecordQueryRequest resumeRecordQueryRequest, HttpServletRequest request) {
+        if (resumeRecordQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        resumeRecordQueryRequest.setUserId(userService.getLoginUser(request).getId());
+        long current = resumeRecordQueryRequest.getCurrent();
+        long size = resumeRecordQueryRequest.getPageSize();
+        Page<ResumeRecord> resumeRecordPage = resumeRecordService.page(new Page<>(current, size),
+                resumeRecordService.getQueryWrapper(resumeRecordQueryRequest));
+        Page<UserResumeRecordVO> userResumeRecordVOPage = resumeRecordService.getUserResumeRecordVOPage(resumeRecordPage);
+        return ResultUtils.success(userResumeRecordVOPage);
+    }
 }
