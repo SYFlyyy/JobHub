@@ -6,21 +6,22 @@ import com.shaoyafan.jobhubbackend.common.ErrorCode;
 import com.shaoyafan.jobhubbackend.constant.CommonConstant;
 import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
+import com.shaoyafan.jobhubbackend.mapper.JobMapper;
 import com.shaoyafan.jobhubbackend.model.domain.Company;
+import com.shaoyafan.jobhubbackend.model.domain.HiringData;
 import com.shaoyafan.jobhubbackend.model.domain.Job;
-import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobAddRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobUpdateRequest;
-import com.shaoyafan.jobhubbackend.model.enums.UserRoleEnum;
 import com.shaoyafan.jobhubbackend.service.CompanyService;
+import com.shaoyafan.jobhubbackend.service.HiringDataService;
 import com.shaoyafan.jobhubbackend.service.JobService;
-import com.shaoyafan.jobhubbackend.mapper.JobMapper;
 import com.shaoyafan.jobhubbackend.service.UserService;
 import com.shaoyafan.jobhubbackend.utils.SqlUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +42,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
     @Resource
     private CompanyService companyService;
 
+    @Resource
+    private HiringDataService hiringDataService;
+
     @Override
+    @Transactional
     public Long addJob(JobAddRequest jobAddRequest, HttpServletRequest request) {
         Long companyId = userService.getLoginUser(request).getCompanyId();
         if (companyId == null) {
@@ -80,6 +85,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         boolean result = this.save(job);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "新增职位失败");
+        }
+        // 新增招聘数据
+        HiringData hiringData = new HiringData();
+        hiringData.setJobId(job.getId());
+        boolean save = hiringDataService.save(hiringData);
+        if (!save) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "新增招聘数据失败");
         }
         return job.getId();
     }
