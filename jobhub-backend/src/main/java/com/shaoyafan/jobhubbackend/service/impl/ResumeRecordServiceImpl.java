@@ -9,10 +9,7 @@ import com.shaoyafan.jobhubbackend.constant.CommonConstant;
 import com.shaoyafan.jobhubbackend.constant.HiringStatusConstant;
 import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
-import com.shaoyafan.jobhubbackend.model.domain.ApplicationInfo;
-import com.shaoyafan.jobhubbackend.model.domain.Job;
-import com.shaoyafan.jobhubbackend.model.domain.Resume;
-import com.shaoyafan.jobhubbackend.model.domain.ResumeRecord;
+import com.shaoyafan.jobhubbackend.model.domain.*;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
@@ -23,6 +20,7 @@ import com.shaoyafan.jobhubbackend.mapper.ResumeRecordMapper;
 import com.shaoyafan.jobhubbackend.utils.SqlUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +49,11 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
     @Resource
     private ApplicationInfoService applicationInfoService;
 
+    @Resource
+    private HiringDataService hiringDataService;
+
     @Override
+    @Transactional
     public Boolean addResumeRecord(JobIdRequest jobIdRequest, HttpServletRequest request) {
         Long jobId = jobIdRequest.getId();
         Job job = jobService.getById(jobId);
@@ -85,6 +87,16 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
+        // 招聘数据投递数+1
+        HiringData hiringData = hiringDataService.getOne(new QueryWrapper<HiringData>().eq("job_id", jobId));
+        if (hiringData == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        hiringData.setApplicationCount(hiringData.getApplicationCount() + 1);
+        boolean save = hiringDataService.updateById(hiringData);
+        if (!save) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+        }
         return true;
     }
 
@@ -105,6 +117,23 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         resumeRecord.setStatus(status);
         boolean result = this.updateById(resumeRecord);
         if (!result) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR);
+        }
+        // 更新招聘数据
+        Long jobId = resumeRecord.getJobId();
+        HiringData hiringData = hiringDataService.getOne(new QueryWrapper<HiringData>().eq("job_id", jobId));
+        if (hiringData == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        if (Objects.equals(status, HiringStatusConstant.INTERVIEWING)) {
+            // 面试数+1
+            hiringData.setInterviewCount(hiringData.getInterviewCount() + 1);
+        } else if (Objects.equals(status, HiringStatusConstant.HIRED)) {
+            // 录用数+1
+            hiringData.setHiredCount(hiringData.getHiredCount() + 1);
+        }
+        boolean save = hiringDataService.updateById(hiringData);
+        if (!save) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
         return true;

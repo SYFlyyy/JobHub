@@ -8,7 +8,6 @@ import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.HiringData;
 import com.shaoyafan.jobhubbackend.model.domain.Job;
 import com.shaoyafan.jobhubbackend.model.domain.JobCollection;
-import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.service.HiringDataService;
 import com.shaoyafan.jobhubbackend.service.JobCollectionService;
