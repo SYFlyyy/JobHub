@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
-const userRouter = createRouter({
+const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/login', component: () => import('@/views/login/Login.vue') },
     {
       path: '/',
       component: () => import('@/views/layout/LayoutContainer.vue'),
-      redirect: '/user/info',
+      redirect: '/user/information',
       children: [
         {
           path: '/admin/userManage',
@@ -78,7 +79,7 @@ const userRouter = createRouter({
           component: () => import('@/views/user/UserAvatar.vue'),
         },
         {
-          path: '/user/info',
+          path: '/user/information',
           component: () => import('@/views/user/UserInfo.vue'),
         },
         {
@@ -90,4 +91,11 @@ const userRouter = createRouter({
   ],
 })
 
-export default userRouter
+router.beforeEach((to) => {
+  const userStore = useUserStore()
+  // if (!userStore.loginUser && to.path !== '/login') {
+  //   return '/login'
+  // }
+})
+
+export default router

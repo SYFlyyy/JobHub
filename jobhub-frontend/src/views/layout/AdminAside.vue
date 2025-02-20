@@ -48,7 +48,7 @@
           <el-icon><User /></el-icon>
           <span>个人中心</span>
         </template>
-        <el-menu-item index="/user/info">
+        <el-menu-item index="/user/information">
           <el-icon><ChatLineSquare /></el-icon>
           <span>基本资料</span>
         </el-menu-item>

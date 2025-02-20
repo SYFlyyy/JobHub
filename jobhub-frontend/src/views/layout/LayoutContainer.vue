@@ -10,24 +10,52 @@ import avatar from '@/assets/default.png'
 import AdminAside from './AdminAside.vue';
 import CandidateAside from './CandidateAside.vue';
 import RecruiterAside from './RecruiterAside.vue';
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
+
+const userStore = useUserStore();
+const router = useRouter();
+// const loginUser = ref()
+// onBeforeMount(() => {
+//   loginUser.value = userStore.loginUser;
+// })
+// 从store中获取登录用户信息
+const loginUser = userStore.loginUser;
+
+const handleCommand = async (command) => {
+  if (command === 'logout') {
+    // 退出操作
+    await ElMessageBox.confirm('确认退出登录吗？', '温馨提示', {
+      type: 'warning',
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+    })
+    userStore.setLoginUser({})
+    router.push('/login')
+  } else {
+    router.push(`/user/${command}`);
+  }
+}
 </script>
 
 <template>
   <el-container class="layout-container">
-    <AdminAside />
-    <CandidateAside />
-    <RecruiterAside />
+    <AdminAside v-if="loginUser.role === 0"/>
+    <CandidateAside v-else-if="loginUser.role === 1"/>
+    <RecruiterAside v-else-if="loginUser.role === 2"/>
     <el-container>
       <el-header>
-        <div>管理员：<strong>admin</strong></div>
-        <el-dropdown placement="bottom-end">
+        <div v-if="loginUser.role === 0"><strong>{{ loginUser.username ? loginUser.username : '用户' }}</strong></div>
+        <div v-else-if="loginUser.role === 1">求职者：<strong>{{ loginUser.username ? loginUser.username : '用户' }}</strong></div>
+        <div v-else-if="loginUser.role === 2">招聘者：<strong>{{ loginUser.username ? loginUser.username : '用户' }}</strong></div>
+        <el-dropdown placement="bottom-end" @command="handleCommand">
           <span class="el-dropdown__box">
             <el-avatar :src="avatar" />
             <el-icon><CaretBottom /></el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="profile" :icon="User"
+              <el-dropdown-item command="information" :icon="User"
                 >基本资料</el-dropdown-item
               >
               <el-dropdown-item command="avatar" :icon="Crop"
