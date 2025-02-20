@@ -7,19 +7,19 @@ const userRouter = createRouter({
     {
       path: '/',
       component: () => import('@/views/layout/LayoutContainer.vue'),
-      redirect: '/admin/userManage',
+      redirect: '/user/info',
       children: [
         {
           path: '/admin/userManage',
           component: () => import('@/views/admin/UserManage.vue'),
         },
         {
-          path: '/candidate/application',
-          component: () => import('@/views/candidate/Application.vue'),
+          path: '/admin/companyManage',
+          component: () => import('@/views/admin/CompanyManage.vue'),
         },
         {
-          path: '/candidate/resume',
-          component: () => import('@/views/candidate/Resume.vue'),
+          path: '/admin/jobManage',
+          component: () => import('@/views/admin/JobManage.vue'),
         },
         {
           path: '/data/platformData',
@@ -30,31 +30,59 @@ const userRouter = createRouter({
           component: () => import('@/views/data/ResumeData.vue'),
         },
         {
-          path: '/feedback',
-          component: () => import('@/views/feedback/Feedback.vue'),
+          path: '/notice/admin',
+          component: () => import('@/views/notice/NoticeAdmin.vue'),
         },
         {
-          path: '/job',
-          component: () => import('@/views/job/Job.vue'),
+          path: '/notice/user',
+          component: () => import('@/views/notice/NoticeUser.vue'),
         },
         {
-          path: '/notice',
-          component: () => import('@/views/notice/Notice.vue'),
+          path: '/feedback/admin',
+          component: () => import('@/views/feedback/FeedbackAdmin.vue'),
         },
         {
-          path: '/recruiter/company',
-          component: () => import('@/views/recruiter/Company.vue'),
+          path: '/feedback/user',
+          component: () => import('@/views/feedback/FeedbackUser.vue'),
         },
         {
-          path: '/user/userAvatar',
+          path: '/job/page',
+          component: () => import('@/views/job/JobPage.vue'),
+        },
+        {
+          path: '/job/collect',
+          component: () => import('@/views/job/JobCollect.vue'),
+        },
+        {
+          path: '/job/jobManage',
+          component: () => import('@/views/job/JobManage.vue'),
+        },
+        {
+          path: '/record/candidate',
+          component: () => import('@/views/record/ResumeRecordCandidate.vue'),
+        },
+        {
+          path: '/candidate/application',
+          component: () => import('@/views/candidate/Application.vue'),
+        },
+        {
+          path: '/recruiter/companyManage',
+          component: () => import('@/views/recruiter/CompanyManage.vue'),
+        },
+        {
+          path: '/record/recruiter',
+          component: () => import('@/views/record/ResumeRecordRecruiter.vue'),
+        },
+        {
+          path: '/user/avatar',
           component: () => import('@/views/user/UserAvatar.vue'),
         },
         {
-          path: '/user/userInfo',
+          path: '/user/info',
           component: () => import('@/views/user/UserInfo.vue'),
         },
         {
-          path: '/user/userPassword',
+          path: '/user/password',
           component: () => import('@/views/user/UserPassword.vue'),
         }
       ],

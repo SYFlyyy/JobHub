@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>个人简历</h1>
+    <h1>投递记录</h1>
   </div>
 </template>
 

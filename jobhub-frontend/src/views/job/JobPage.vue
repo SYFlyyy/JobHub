@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>简历附件</h1>
+    <h1>职位浏览</h1>
   </div>
 </template>
 
