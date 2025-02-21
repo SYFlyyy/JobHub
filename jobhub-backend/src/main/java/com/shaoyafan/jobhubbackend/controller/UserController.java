@@ -14,10 +14,8 @@ import com.shaoyafan.jobhubbackend.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -123,6 +121,20 @@ public class UserController {
     }
 
     /**
+     * 上传头像
+     *
+     * @param file
+     * @param request
+     * @return
+     */
+    @PostMapping("/upload/avatar")
+    @ApiOperation("上传头像")
+    public BaseResponse<Boolean> uploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        Boolean result = userService.uploadAvatar(file, request);
+        return ResultUtils.success(result);
+    }
+
+    /**
      * 更新密码
      *
      * @param userUpdatePwdRequest
@@ -138,6 +150,26 @@ public class UserController {
         }
         boolean result = userService.updatePassword(userUpdatePwdRequest, request);
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 分页获取用户列表
+     *
+     * @param userQueryRequest
+     * @return
+     */
+    @PostMapping("/list/page")
+    @AuthCheck(mustRole = 0)
+    @ApiOperation("分页获取用户列表")
+    public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest) {
+        if (userQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        long current = userQueryRequest.getCurrent();
+        long size = userQueryRequest.getPageSize();
+        Page<User> userPage = userService.page(new Page<>(current, size),
+                userService.getQueryWrapper(userQueryRequest));
+        return ResultUtils.success(userPage);
     }
 
     /**
