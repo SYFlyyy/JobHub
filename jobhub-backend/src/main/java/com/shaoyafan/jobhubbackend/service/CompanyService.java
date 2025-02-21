@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shaoyafan.jobhubbackend.model.domain.Company;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shaoyafan.jobhubbackend.model.dto.company.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +33,15 @@ public interface CompanyService extends IService<Company> {
      * @return
      */
     Boolean updateCompany(CompanyUpdateRequest companyUpdateRequest);
+
+    /**
+     * 上传企业logo
+     *
+     * @param file
+     * @param request
+     * @return
+     */
+    Boolean uploadLogo(MultipartFile file, HttpServletRequest request);
 
     /**
      * 用户绑定企业

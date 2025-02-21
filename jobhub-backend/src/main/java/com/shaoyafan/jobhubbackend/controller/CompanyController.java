@@ -12,10 +12,8 @@ import com.shaoyafan.jobhubbackend.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -66,6 +64,14 @@ public class CompanyController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         boolean result = companyService.updateCompany(companyUpdateRequest);
+        return ResultUtils.success(result);
+    }
+
+    @PostMapping("/upload/logo")
+    @AuthCheck(mustRole = 2)
+    @ApiOperation("上传企业logo")
+    public BaseResponse<Boolean> uploadCompanyLogo(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        Boolean result = companyService.uploadLogo(file, request);
         return ResultUtils.success(result);
     }
 

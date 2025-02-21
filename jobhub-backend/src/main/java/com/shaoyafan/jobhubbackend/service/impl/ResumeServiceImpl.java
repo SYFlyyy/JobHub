@@ -40,7 +40,7 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
     @Resource
     private UserService userService;
 
-    private static final String RESUME_FILE_PATH = "resume/";
+    private static final String RESUME_FILE_PATH = "file/resume/";
 
     @Override
     @Transactional

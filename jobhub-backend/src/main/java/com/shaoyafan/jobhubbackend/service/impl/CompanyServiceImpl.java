@@ -16,9 +16,15 @@ import com.shaoyafan.jobhubbackend.utils.SqlUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -32,6 +38,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company>
 
     @Resource
     private UserService userService;
+
+    private static final String LOGO_FILE_PATH = "file/companyLogo/";
 
     @Override
     @Transactional
@@ -132,6 +140,69 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company>
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
         return true;
+    }
+
+    @Override
+    public Boolean uploadLogo(MultipartFile file, HttpServletRequest request) {
+        Long companyId = userService.getLoginUser(request).getCompanyId();
+        if (companyId == null) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前用户未绑定企业");
+        }
+        Company company = this.getById(companyId);
+        if (company == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "企业不存在");
+        }
+        try {
+            // 检查文件是否为空
+            if (file.isEmpty()) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件不能为空");
+            }
+            // 检查文件类型
+            String contentType = file.getContentType();
+            if (contentType == null
+                    || !(contentType.equals("image/jpeg")
+                    || contentType.equals("image/png"))) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "只支持 JPG、PNG文件");
+            }
+            // 创建上传目录（如果不存在）
+            File uploadDir = new File(LOGO_FILE_PATH);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            String fileName = companyId + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(LOGO_FILE_PATH + fileName);
+            // 用户是否已上传头像
+            if (StringUtils.isBlank(company.getLogo())) {
+                // 用户首次上传头像
+                Files.copy(file.getInputStream(), filePath);
+                company.setLogo(filePath.toString());
+                boolean result = this.updateById(company);
+                if (!result) {
+                    throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传logo失败");
+                }
+            } else {
+                // 用户已上传头像，删除原文件后再上传
+                Path oldFilePath = Paths.get(company.getLogo());
+                if (Files.exists(oldFilePath)) {
+                    try {
+                        Files.delete(oldFilePath);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new BusinessException(ErrorCode.OPERATION_ERROR, "删除原文件失败");
+                    }
+                }
+                Files.copy(file.getInputStream(), filePath);
+                company.setLogo(filePath.toString());
+                boolean result = this.updateById(company);
+                if (!result) {
+                    throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传logo失败");
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传logo失败");
+        }
     }
 
     @Override

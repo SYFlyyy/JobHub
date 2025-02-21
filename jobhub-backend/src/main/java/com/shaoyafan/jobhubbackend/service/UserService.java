@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.shaoyafan.jobhubbackend.model.dto.user.*;
 import com.shaoyafan.jobhubbackend.model.vo.user.LoginUserVO;
 import com.shaoyafan.jobhubbackend.model.vo.user.UserVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -59,6 +60,15 @@ public interface UserService extends IService<User> {
      * @return
      */
     Boolean updateMyUser(UserUpdateMyRequest userUpdateMyRequest, HttpServletRequest request);
+
+    /**
+     * 上传头像
+     *
+     * @param file
+     * @param request
+     * @return
+     */
+    Boolean uploadAvatar(MultipartFile file, HttpServletRequest request);
 
     /**
      * 更新密码

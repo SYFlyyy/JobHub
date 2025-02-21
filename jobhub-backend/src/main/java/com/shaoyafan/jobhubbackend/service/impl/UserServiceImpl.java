@@ -8,6 +8,7 @@ import com.shaoyafan.jobhubbackend.constant.CommonConstant;
 import com.shaoyafan.jobhubbackend.constant.RoleConstant;
 import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
+import com.shaoyafan.jobhubbackend.model.domain.Resume;
 import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.shaoyafan.jobhubbackend.model.dto.user.*;
 import com.shaoyafan.jobhubbackend.model.vo.user.LoginUserVO;
@@ -22,8 +23,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +50,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * 盐值，混淆密码
      */
     public static final String SALT = "shaoyafan";
+
+    private static final String Avatar_FILE_PATH = "file/userAvatar/";
 
     @Override
     public Long userRegister(UserRegisterRequest userRegisterRequest) {
@@ -117,6 +126,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = this.baseMapper.selectOne(queryWrapper);
         // 用户不存在
         if (user == null) {
+            
             log.info("用户登录失败，账号或密码错误");
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或密码错误");
         }
@@ -175,6 +185,62 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
         return true;
+    }
+
+    @Override
+    public Boolean uploadAvatar(MultipartFile file, HttpServletRequest request) {
+        User user = this.getLoginUser(request);
+        try {
+            // 检查文件是否为空
+            if (file.isEmpty()) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "文件不能为空");
+            }
+            // 检查文件类型
+            String contentType = file.getContentType();
+            if (contentType == null
+                    || !(contentType.equals("image/jpeg")
+                    || contentType.equals("image/png"))) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "只支持 JPG、PNG文件");
+            }
+            // 创建上传目录（如果不存在）
+            File uploadDir = new File(Avatar_FILE_PATH);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+            String fileName = user.getId() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(Avatar_FILE_PATH + fileName);
+            // 用户是否已上传头像
+            if (StringUtils.isBlank(user.getAvatar())) {
+                // 用户首次上传头像
+                Files.copy(file.getInputStream(), filePath);
+                user.setAvatar(filePath.toString());
+                boolean result = this.updateById(user);
+                if (!result) {
+                    throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传头像失败");
+                }
+            } else {
+                // 用户已上传头像，删除原文件后再上传
+                Path oldFilePath = Paths.get(user.getAvatar());
+                if (Files.exists(oldFilePath)) {
+                    try {
+                        Files.delete(oldFilePath);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        throw new BusinessException(ErrorCode.OPERATION_ERROR, "删除原文件失败");
+                    }
+                }
+                Files.copy(file.getInputStream(), filePath);
+                user.setAvatar(filePath.toString());
+                boolean result = this.updateById(user);
+                if (!result) {
+                    throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传头像失败");
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传头像失败");
+        }
     }
 
     @Override
