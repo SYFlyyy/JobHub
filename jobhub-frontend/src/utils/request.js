@@ -7,6 +7,7 @@ const instance = axios.create({
   // TODO 1. 基础地址，超时时间
   baseURL,
   timeout: 10000,
+  withCredentials: true,
 })
 
 // 请求拦截器

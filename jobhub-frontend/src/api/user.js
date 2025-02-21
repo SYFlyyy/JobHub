@@ -17,3 +17,22 @@ export const userLoginService = ({account, password}) => {
     password
   })
 }
+
+// 获取用户列表
+export const getUserListService = (data) => {
+  return request.post('/user/list/page', data)
+}
+
+// 审核用户
+export const reviewUserService = ({id}) => {
+  return request.post('/user/review', {
+    id
+  })
+}
+
+// 冻结用户
+export const freezeUserService = ({id}) => {
+  return request.post('/user/freeze', {
+    id
+  })
+}

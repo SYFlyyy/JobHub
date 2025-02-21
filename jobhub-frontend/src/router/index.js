@@ -93,9 +93,9 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const userStore = useUserStore()
-  // if (!userStore.loginUser && to.path !== '/login') {
-  //   return '/login'
-  // }
+  if (!userStore.loginUser && to.path !== '/login') {
+    return '/login'
+  }
 })
 
 export default router

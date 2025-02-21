@@ -30,7 +30,7 @@ const handleCommand = async (command) => {
       confirmButtonText: '确认',
       cancelButtonText: '取消',
     })
-    userStore.setLoginUser({})
+    userStore.clearLoginUser();
     router.push('/login')
   } else {
     router.push(`/user/${command}`);
@@ -50,7 +50,7 @@ const handleCommand = async (command) => {
         <div v-else-if="loginUser.role === 2">招聘者：<strong>{{ loginUser.username ? loginUser.username : '用户' }}</strong></div>
         <el-dropdown placement="bottom-end" @command="handleCommand">
           <span class="el-dropdown__box">
-            <el-avatar :src="avatar" />
+            <el-avatar :src="'http://localhost:8080/jobhub/' + loginUser.avatar" />
             <el-icon><CaretBottom /></el-icon>
           </span>
           <template #dropdown>
