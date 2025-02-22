@@ -129,8 +129,8 @@ public class UserController {
      */
     @PostMapping("/upload/avatar")
     @ApiOperation("上传头像")
-    public BaseResponse<Boolean> uploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        Boolean result = userService.uploadAvatar(file, request);
+    public BaseResponse<String> uploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        String result = userService.uploadAvatar(file, request);
         return ResultUtils.success(result);
     }
 
@@ -150,26 +150,6 @@ public class UserController {
         }
         boolean result = userService.updatePassword(userUpdatePwdRequest, request);
         return ResultUtils.success(result);
-    }
-
-    /**
-     * 分页获取用户列表
-     *
-     * @param userQueryRequest
-     * @return
-     */
-    @PostMapping("/list/page")
-    @AuthCheck(mustRole = 0)
-    @ApiOperation("分页获取用户列表")
-    public BaseResponse<Page<User>> listUserByPage(@RequestBody UserQueryRequest userQueryRequest) {
-        if (userQueryRequest == null) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR);
-        }
-        long current = userQueryRequest.getCurrent();
-        long size = userQueryRequest.getPageSize();
-        Page<User> userPage = userService.page(new Page<>(current, size),
-                userService.getQueryWrapper(userQueryRequest));
-        return ResultUtils.success(userPage);
     }
 
     /**

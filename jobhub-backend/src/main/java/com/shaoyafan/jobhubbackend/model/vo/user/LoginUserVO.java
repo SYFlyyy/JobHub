@@ -19,9 +19,24 @@ public class LoginUserVO implements Serializable {
     private Long id;
 
     /**
+     * 账号
+     */
+    private String account;
+
+    /**
      * 用户真实姓名
      */
     private String username;
+
+    /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * 手机
+     */
+    private String phone;
 
     /**
      * 头像
@@ -34,14 +49,14 @@ public class LoginUserVO implements Serializable {
     private Integer role;
 
     /**
-     * 创建时间
+     * 状态，关联status表id
      */
-    private Date createTime;
+    private Integer status;
 
     /**
-     * 更新时间
+     * 企业，用户为招聘者时关联company_info表id
      */
-    private Date updateTime;
+    private Long companyId;
 
     private static final long serialVersionUID = 1L;
 }

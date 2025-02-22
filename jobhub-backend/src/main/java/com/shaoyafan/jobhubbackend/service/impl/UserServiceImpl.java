@@ -188,7 +188,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public Boolean uploadAvatar(MultipartFile file, HttpServletRequest request) {
+    public String uploadAvatar(MultipartFile file, HttpServletRequest request) {
         User user = this.getLoginUser(request);
         try {
             // 检查文件是否为空
@@ -236,7 +236,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
                     throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传头像失败");
                 }
             }
-            return true;
+            return user.getAvatar();
         } catch (IOException e) {
             e.printStackTrace();
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "上传头像失败");

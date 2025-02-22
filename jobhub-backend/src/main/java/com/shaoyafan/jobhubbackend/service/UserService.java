@@ -68,7 +68,7 @@ public interface UserService extends IService<User> {
      * @param request
      * @return
      */
-    Boolean uploadAvatar(MultipartFile file, HttpServletRequest request);
+    String uploadAvatar(MultipartFile file, HttpServletRequest request);
 
     /**
      * 更新密码
