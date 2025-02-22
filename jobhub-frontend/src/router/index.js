@@ -74,10 +74,10 @@ const router = createRouter({
           path: '/record/recruiter',
           component: () => import('@/views/record/ResumeRecordRecruiter.vue'),
         },
-        {
-          path: '/user/avatar',
-          component: () => import('@/views/user/UserAvatar.vue'),
-        },
+        // {
+        //   path: '/user/avatar',
+        //   component: () => import('@/views/user/UserAvatar.vue'),
+        // },
         {
           path: '/user/information',
           component: () => import('@/views/user/UserInfo.vue'),
