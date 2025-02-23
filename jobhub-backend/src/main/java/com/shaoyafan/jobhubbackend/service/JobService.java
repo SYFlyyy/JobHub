@@ -1,12 +1,14 @@
 package com.shaoyafan.jobhubbackend.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shaoyafan.jobhubbackend.model.domain.Job;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobAddRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobUpdateRequest;
+import com.shaoyafan.jobhubbackend.model.vo.job.JobVO;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -61,11 +63,35 @@ public interface JobService extends IService<Job> {
     Boolean offlineJob(JobIdRequest jobIdRequest);
 
     /**
+     * 获取职位（含企业信息）
+     *
+     * @param jobQueryRequest
+     * @return
+     */
+    Page<JobVO> listJobWithCompany(JobQueryRequest jobQueryRequest);
+
+    /**
      * 获取查询条件
      *
      * @param jobQueryRequest
      * @return
      */
     QueryWrapper<Job> getJobQueryWrapper(JobQueryRequest jobQueryRequest);
+
+    /**
+     * 获取查询条件
+     *
+     * @param jobQueryRequest
+     * @return
+     */
+    QueryWrapper<Job> getJobVOQueryWrapper(JobQueryRequest jobQueryRequest);
+
+    /**
+     * 获取收藏的职位列表
+     *
+     * @param request
+     * @return
+     */
+    Page<JobVO> getCollectedJobByPage(JobQueryRequest jobQueryRequest, HttpServletRequest request);
 
 }

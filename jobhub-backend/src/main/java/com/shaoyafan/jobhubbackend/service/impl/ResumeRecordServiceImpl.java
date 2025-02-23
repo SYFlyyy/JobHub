@@ -52,6 +52,9 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
     @Resource
     private HiringDataService hiringDataService;
 
+    @Resource
+    private CompanyService companyService;
+
     @Override
     @Transactional
     public Boolean addResumeRecord(JobIdRequest jobIdRequest, HttpServletRequest request) {
@@ -174,7 +177,9 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
                     BeanUtils.copyProperties(resumeRecord, userResumeRecordVO);
                     Job job = jobService.getById(resumeRecord.getJobId());
                     if (job != null) {
-                        userResumeRecordVO.setCompanyName(job.getCompanyName());
+                        Long companyId = job.getCompanyId();
+                        Company company = companyService.getOne(new QueryWrapper<Company>().eq("id", companyId));
+                        userResumeRecordVO.setCompanyName(company.getName());
                         userResumeRecordVO.setJobName(job.getName());
                         userResumeRecordVO.setSalary(job.getSalary());
                     }

@@ -1,23 +1,22 @@
 package com.shaoyafan.jobhubbackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shaoyafan.jobhubbackend.common.ErrorCode;
 import com.shaoyafan.jobhubbackend.constant.CommonConstant;
 import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
+import com.shaoyafan.jobhubbackend.mapper.JobCollectionMapper;
 import com.shaoyafan.jobhubbackend.mapper.JobMapper;
-import com.shaoyafan.jobhubbackend.model.domain.Company;
-import com.shaoyafan.jobhubbackend.model.domain.HiringData;
-import com.shaoyafan.jobhubbackend.model.domain.Job;
+import com.shaoyafan.jobhubbackend.model.domain.*;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobAddRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobUpdateRequest;
-import com.shaoyafan.jobhubbackend.service.CompanyService;
-import com.shaoyafan.jobhubbackend.service.HiringDataService;
-import com.shaoyafan.jobhubbackend.service.JobService;
-import com.shaoyafan.jobhubbackend.service.UserService;
+import com.shaoyafan.jobhubbackend.model.vo.job.JobVO;
+import com.shaoyafan.jobhubbackend.service.*;
 import com.shaoyafan.jobhubbackend.utils.SqlUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -35,6 +35,12 @@ import java.util.Objects;
 @Service
 public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
     implements JobService {
+
+    @Resource
+    private JobMapper jobMapper;
+
+    @Resource
+    private JobCollectionMapper jobCollectionMapper;
 
     @Resource
     private UserService userService;
@@ -56,7 +62,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         if (company == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "企业不存在");
         }
-        String companyName = company.getName();
+        // String companyName = company.getName();
         String name = jobAddRequest.getName();
         if (StringUtils.isBlank(name)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "职位名称不能为空");
@@ -75,7 +81,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         }
         Job job = new Job();
         job.setCompanyId(companyId);
-        job.setCompanyName(companyName);
+        // job.setCompanyName(companyName);
         job.setName(name);
         job.setType(type);
         job.setSalary(salary);
@@ -200,13 +206,22 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
     }
 
     @Override
+    public Page<JobVO> listJobWithCompany(JobQueryRequest jobQueryRequest) {
+        QueryWrapper<Job> jobQueryWrapper = this.getJobVOQueryWrapper(jobQueryRequest);
+        long current = jobQueryRequest.getCurrent();
+        long size = jobQueryRequest.getPageSize();
+        Page<JobVO> page = new Page<>(current, size);
+        IPage<JobVO> jobVOIPage = jobMapper.selectJobWithCompany(page, jobQueryWrapper);
+        return (Page<JobVO>) jobVOIPage;
+    }
+
+    @Override
     public QueryWrapper<Job> getJobQueryWrapper(JobQueryRequest jobQueryRequest) {
         if (jobQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
         }
         Long id = jobQueryRequest.getId();
         Long companyId = jobQueryRequest.getCompanyId();
-        String companyName = jobQueryRequest.getCompanyName();
         String name = jobQueryRequest.getName();
         Integer type = jobQueryRequest.getType();
         String salary = jobQueryRequest.getSalary();
@@ -217,7 +232,6 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(id != null, "id", id);
         queryWrapper.eq(companyId != null, "company_id", companyId);
-        queryWrapper.like(StringUtils.isNotBlank(companyName), "company_name", companyName);
         queryWrapper.like(StringUtils.isNotBlank(name), "name", name);
         queryWrapper.eq(type != null, "type", type);
         queryWrapper.like(StringUtils.isNotBlank(salary), "salary", salary);
@@ -227,6 +241,60 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         return queryWrapper;
     }
 
+    @Override
+    public QueryWrapper<Job> getJobVOQueryWrapper(JobQueryRequest jobQueryRequest) {
+        if (jobQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
+        }
+        Long id = jobQueryRequest.getId();
+        Long companyId = jobQueryRequest.getCompanyId();
+        String address = jobQueryRequest.getAddress();
+        Integer type = jobQueryRequest.getType();
+        String salary = jobQueryRequest.getSalary();
+        String intro = jobQueryRequest.getIntro();
+        Integer status = jobQueryRequest.getStatus();
+        String searchKey = jobQueryRequest.getSearchKey();
+        String sortField = jobQueryRequest.getSortField();
+        String sortOrder = jobQueryRequest.getSortOrder();
+        QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(id != null, "job.id", id);
+        queryWrapper.eq(companyId != null, "job.company_id", companyId);
+        // 处理 searchKey 进行模糊查询
+        if (StringUtils.isNotBlank(searchKey)) {
+            String likeValue = "%" + searchKey + "%";
+            queryWrapper.and(wrapper -> wrapper.like("job.name", likeValue)
+                    .or()
+                    .like("company.name", likeValue));
+        }
+        queryWrapper.eq(type != null, "job.type", type);
+        queryWrapper.like(StringUtils.isNotBlank(address), "company.address", address);
+        queryWrapper.like(StringUtils.isNotBlank(salary), "job.salary", salary);
+        queryWrapper.like(StringUtils.isNotBlank(intro), "job.intro", intro);
+        queryWrapper.eq(status != null, "job.status", status);
+        queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+        return queryWrapper;
+    }
+
+    @Override
+    public Page<JobVO> getCollectedJobByPage(JobQueryRequest jobQueryRequest, HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        Long userId = loginUser.getId();
+        String sortField = jobQueryRequest.getSortField();
+        String sortOrder = jobQueryRequest.getSortOrder();
+        // 获取用户收藏的职位id
+        List<Long> jobIds = jobCollectionMapper.getJobIdByUserId(userId);
+        QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("job.id", jobIds);
+        queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);
+        long current = jobQueryRequest.getCurrent();
+        long size = jobQueryRequest.getPageSize();
+        Page<JobVO> page = new Page<>(current, size);
+        IPage<JobVO> jobVOIPage = jobMapper.selectJobWithCompany(page, queryWrapper);
+        return (Page<JobVO>) jobVOIPage;
+    }
 }
 
 

@@ -30,6 +30,11 @@ public class JobQueryRequest extends PageRequest implements Serializable {
     private String companyName;
 
     /**
+     * 企业地址
+     */
+    private String address;
+
+    /**
      * 职位名称
      */
     private String name;
@@ -48,6 +53,11 @@ public class JobQueryRequest extends PageRequest implements Serializable {
      * 职位详情
      */
     private String intro;
+
+    /**
+     * 搜索关键字
+     */
+    private String searchKey;
 
     /**
      * 状态（0-上线、1-下线）

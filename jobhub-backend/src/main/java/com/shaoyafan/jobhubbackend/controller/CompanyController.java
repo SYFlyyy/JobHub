@@ -100,7 +100,6 @@ public class CompanyController {
      * @return
      */
     @PostMapping("/list/page")
-    @AuthCheck(mustRole = 0)
     @ApiOperation("分页获取企业列表")
     public BaseResponse<Page<Company>> listCompanyByPage(@RequestBody CompanyQueryRequest companyQueryRequest) {
         if (companyQueryRequest == null) {

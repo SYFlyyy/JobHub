@@ -353,10 +353,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String sortOrder = userQueryRequest.getSortOrder();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(id != null, "id", id);
-        queryWrapper.eq(StringUtils.isNotBlank(account), "account", account);
-        queryWrapper.eq(StringUtils.isNotBlank(username), "username", username);
-        queryWrapper.eq(StringUtils.isNotBlank(email), "email", email);
-        queryWrapper.eq(StringUtils.isNotBlank(phone), "phone", phone);
+        queryWrapper.like(StringUtils.isNotBlank(account), "account", account);
+        queryWrapper.like(StringUtils.isNotBlank(username), "username", username);
+        queryWrapper.like(StringUtils.isNotBlank(email), "email", email);
+        queryWrapper.like(StringUtils.isNotBlank(phone), "phone", phone);
         queryWrapper.eq(role != null, "role", role);
         queryWrapper.eq(status != null, "status", status);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);

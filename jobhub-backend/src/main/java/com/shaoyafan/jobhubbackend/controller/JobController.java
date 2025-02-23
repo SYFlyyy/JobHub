@@ -13,6 +13,7 @@ import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobUpdateRequest;
 import com.shaoyafan.jobhubbackend.model.enums.UserRoleEnum;
+import com.shaoyafan.jobhubbackend.model.vo.job.JobVO;
 import com.shaoyafan.jobhubbackend.service.JobCollectionService;
 import com.shaoyafan.jobhubbackend.service.JobService;
 import com.shaoyafan.jobhubbackend.service.UserService;
@@ -20,10 +21,7 @@ import com.shaoyafan.jobhubbackend.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -170,6 +168,36 @@ public class JobController {
     }
 
     /**
+     * 分页获取职位列表（包含企业信息）
+     *
+     * @param jobQueryRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/list/page/vo")
+    @ApiOperation("分页获取职位列表（包含企业信息）")
+    public BaseResponse<Page<JobVO>> listJobWithCompanyByPage(@RequestBody JobQueryRequest jobQueryRequest, HttpServletRequest request) {
+        if (jobQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        // 当前用户为招聘者时，只能查看自己公司的职位
+        if (Objects.equals(loginUser.getRole(), UserRoleEnum.RECRUITER.getValue())) {
+            Long companyId = loginUser.getCompanyId();
+            if (companyId == null) {
+                throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前用户未绑定企业");
+            }
+            jobQueryRequest.setCompanyId(loginUser.getCompanyId());
+        }
+        // 当前用户为求职者时，只能查看上线的职位
+        if (Objects.equals(loginUser.getRole(), UserRoleEnum.CANDIDATE.getValue())) {
+            jobQueryRequest.setStatus(StatusConstant.NORMAL);
+        }
+        Page<JobVO> jobVOPage = jobService.listJobWithCompany(jobQueryRequest);
+        return ResultUtils.success(jobVOPage);
+    }
+
+    /**
      * 收藏职位
      *
      * @param jobIdRequest
@@ -203,5 +231,22 @@ public class JobController {
         }
         boolean result = jobCollectionService.cancelJobCollection(jobIdRequest, request);
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 获取收藏的职位列表
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/collectedJob")
+    @AuthCheck(mustRole = 1)
+    @ApiOperation("获取收藏的职位列表")
+    public BaseResponse<Page<JobVO>> getCollectedJobByPage(@RequestBody JobQueryRequest jobQueryRequest, HttpServletRequest request) {
+        if (jobQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Page<JobVO> collectedJobByPage = jobService.getCollectedJobByPage(jobQueryRequest, request);
+        return ResultUtils.success(collectedJobByPage);
     }
 }

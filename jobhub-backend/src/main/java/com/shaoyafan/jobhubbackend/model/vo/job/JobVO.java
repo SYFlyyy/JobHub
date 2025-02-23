@@ -1,31 +1,39 @@
-package com.shaoyafan.jobhubbackend.model.domain;
+package com.shaoyafan.jobhubbackend.model.vo.job;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-
-import java.io.Serializable;
-import java.util.Date;
 import lombok.Data;
 
 /**
- * 职位表
- * @TableName job
+ * 职位视图
+ *
+ * @author SYF
  */
-@TableName(value ="job")
 @Data
-public class Job implements Serializable {
+public class JobVO {
 
     /**
      * id
      */
-    @TableId
     private Long id;
 
     /**
      * 企业，关联user表company_id
      */
     private Long companyId;
+
+    /**
+     * 企业名称
+     */
+    private String companyName;
+
+    /**
+     * 企业规模
+     */
+    private String size;
+
+    /**
+     * 企业地址
+     */
+    private String address;
 
     /**
      * 职位名称
@@ -52,18 +60,5 @@ public class Job implements Serializable {
      */
     private Integer status;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(update = "now()")
-    private Date updateTime;
-
-    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
-
 }
