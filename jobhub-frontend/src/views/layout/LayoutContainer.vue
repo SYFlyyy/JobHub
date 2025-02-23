@@ -7,9 +7,9 @@ import {
   SwitchButton,
 } from '@element-plus/icons-vue'
 import avatar from '@/assets/default.png'
-import AdminAside from './AdminAside.vue';
-import CandidateAside from './CandidateAside.vue';
-import RecruiterAside from './RecruiterAside.vue';
+import AdminAside from './components/AdminAside.vue';
+import CandidateAside from './components/CandidateAside.vue';
+import RecruiterAside from './components/RecruiterAside.vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 import { onMounted } from 'vue';

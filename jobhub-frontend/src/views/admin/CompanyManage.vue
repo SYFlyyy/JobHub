@@ -102,6 +102,7 @@ const resetParams = () => {
   params.value.type = ''
   params.value.size = ''
   params.value.status = ''
+  getCompanyList()
 }
 </script>
 
@@ -216,11 +217,11 @@ const resetParams = () => {
               :src="'http://localhost:8080/jobhub/' + companyDetail.logo"
             />
           </el-descriptions-item>
-          <el-descriptions-item label="企业名称">{{ companyDetail.name }}</el-descriptions-item>
-          <el-descriptions-item label="企业地址">{{ companyDetail.address }}</el-descriptions-item>
-          <el-descriptions-item label="企业类型">{{ companyDetail.type }}</el-descriptions-item>
-          <el-descriptions-item label="企业规模">{{ companyDetail.size }}</el-descriptions-item>
-          <el-descriptions-item label="企业介绍">
+          <el-descriptions-item label-align="center" align="center" label="企业名称">{{ companyDetail.name }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="企业地址">{{ companyDetail.address }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="企业类型">{{ companyDetail.type }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="企业规模">{{ companyDetail.size }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" label="企业介绍">
             <div class="long-text">{{ companyDetail.intro }}</div>
           </el-descriptions-item>
         </el-descriptions>

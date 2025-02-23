@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
-import { getJobListService, reviewJobService } from '@/api/job'
+import { getJobWithCompanyService, reviewJobService } from '@/api/job'
 
 const jobList = ref([])
 const loading = ref(false)
@@ -22,7 +22,7 @@ const total = ref(0)
 
 const getJobList = async () => {
   loading.value = true
-  const res = await getJobListService(params.value)
+  const res = await getJobWithCompanyService(params.value)
   jobList.value = res.data.data.records
   total.value = parseInt(res.data.data.total)
   loading.value = false
@@ -32,7 +32,7 @@ const dialogVisible = ref(false)
 const jobDetail = ref({})
 const getJobById = async (id) => {
   params.value.id = id
-  const res = await getJobListService(params.value)
+  const res = await getJobWithCompanyService(params.value)
   jobDetail.value = res.data.data.records[0]
   dialogVisible.value = true
   params.value.id = ''

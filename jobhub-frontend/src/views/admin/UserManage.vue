@@ -27,7 +27,7 @@ const getUserList = async () => {
   loading.value = false
 }
 
-const handleClick = (tab) => {
+const handleClick = () => {
   if (activeName.value === 'candidate') {
     params.value.role = '1'
   } else if (activeName.value === 'recruiter') {
@@ -93,6 +93,7 @@ const resetParams = () => {
   params.value.email = ''
   params.value.phone = ''
   params.value.status = ''
+  getUserList()
 }
 </script>
 
@@ -105,6 +106,7 @@ const resetParams = () => {
       <el-button type="primary">添加分类</el-button>
     </template> -->
     <el-tabs v-model="activeName" class="tabs" @tab-click="handleClick">
+      <!-- 求职者管理 -->
       <el-tab-pane label="求职者管理" name="candidate">
         <el-form inline>
           <el-form-item label="账号：">
@@ -168,6 +170,7 @@ const resetParams = () => {
           </el-table-column>
         </el-table>
       </el-tab-pane>
+      <!-- 招聘者管理 -->
       <el-tab-pane label="招聘者管理" name="recruiter">
         <el-form inline>
           <el-form-item label="账号：">
