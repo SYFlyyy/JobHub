@@ -65,7 +65,7 @@ const handleCommand = async (command) => {
                 >更换头像</el-dropdown-item
               > -->
               <el-dropdown-item command="password" :icon="EditPen"
-                >重置密码</el-dropdown-item
+                >修改密码</el-dropdown-item
               >
               <el-dropdown-item command="logout" :icon="SwitchButton"
                 >退出登录</el-dropdown-item

@@ -2,7 +2,7 @@
 import { useUserStore } from '@/stores/user';
 import { ref } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
-import { getLoginUserService, updateUserInfoService } from '@/api/user'
+import { updateUserInfoService } from '@/api/user'
 const {
   loginUser: { account, username, email, phone },
   getLoginUser

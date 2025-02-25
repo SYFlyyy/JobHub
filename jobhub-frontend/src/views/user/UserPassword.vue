@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { updatePasswordService } from '@/api/user'
+import PageContainer from '../layout/PageContainer.vue'
 
 const pwdForm = ref({
   oldPassword: '',
@@ -75,7 +76,10 @@ const onReset = () => {
 }
 </script>
 <template>
-  <page-container title="重置密码">
+  <page-container>
+    <template #title>
+      <div>修改密码</div>
+    </template>
     <el-row>
       <el-col :span="12">
         <el-form
