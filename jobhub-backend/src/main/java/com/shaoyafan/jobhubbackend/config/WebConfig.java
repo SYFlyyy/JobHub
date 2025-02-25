@@ -27,5 +27,11 @@ public class WebConfig implements WebMvcConfigurer {
         // 将 /companyLogo/** 映射到本地的 file/companyLogo 目录
         registry.addResourceHandler("/file/companyLogo/**")
                 .addResourceLocations("file:" + companyLogoPath + "/");
+
+        // 获取 resume 文件夹的绝对路径
+        String applicationInfoPath = new File("file/resume").getAbsolutePath();
+        // 将 /applicationInfo/** 映射到本地的 file/applicationInfo 目录
+        registry.addResourceHandler("/file/resume/**")
+                .addResourceLocations("file:" + applicationInfoPath + "/");
     }
 }

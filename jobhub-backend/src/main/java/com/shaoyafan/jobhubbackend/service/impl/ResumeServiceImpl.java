@@ -170,4 +170,17 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
         }
         return true;
     }
+
+    @Override
+    public String getResumePath(HttpServletRequest request) {
+        Long userId = userService.getLoginUser(request).getId();
+        Resume resume = this.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
+        if (resume == null) {
+            return null;
+        }
+        if (Objects.equals(resume.getStatus(), StatusConstant.DISABLED)) {
+            throw new BusinessException(ErrorCode.STATE_ERROR, "用户已删除简历附件");
+        }
+        return resume.getFilePath();
+    }
 }

@@ -42,4 +42,12 @@ public interface ResumeService extends IService<Resume> {
      * @return
      */
     Boolean deleteResume(HttpServletRequest request);
+
+    /**
+     * 获取简历附件路径
+     *
+     * @param request
+     * @return
+     */
+    String getResumePath(HttpServletRequest request);
 }

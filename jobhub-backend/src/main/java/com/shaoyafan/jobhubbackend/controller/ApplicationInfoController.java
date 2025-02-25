@@ -13,10 +13,7 @@ import com.shaoyafan.jobhubbackend.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -100,5 +97,20 @@ public class ApplicationInfoController {
         }
         ApplicationInfo result = applicationInfoService.getApplicationInfoByUserId(userIdRequest);
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 查询用户是否有在线简历
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("/has")
+    @AuthCheck(mustRole = 1)
+    @ApiOperation("查询用户是否有在线简历")
+    public BaseResponse<Boolean> hasApplicationInfo(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        ApplicationInfo applicationInfo = applicationInfoService.getById(userId);
+        return ResultUtils.success(applicationInfo != null);
     }
 }

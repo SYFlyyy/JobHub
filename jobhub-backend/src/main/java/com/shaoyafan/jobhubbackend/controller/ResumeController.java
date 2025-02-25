@@ -70,4 +70,17 @@ public class ResumeController {
         Boolean result = resumeService.deleteResume(request);
         return ResultUtils.success(result);
     }
+
+    /**
+     * 返回简历附件路径
+     *
+     * @param request
+     * @return
+     */
+    @GetMapping("/path")
+    @ApiOperation("获取简历附件路径")
+    public BaseResponse<String> getResumePath(HttpServletRequest request) {
+        String resumePath = resumeService.getResumePath(request);
+        return ResultUtils.success(resumePath);
+    }
 }

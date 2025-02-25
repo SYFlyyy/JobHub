@@ -73,7 +73,7 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         }
         Resume resume = resumeService.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
         if (resume == null) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先上传个人简历");
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先上传个人简历附件");
         }
         // 判断是否已经投递过该职位
         ResumeRecord existResumeRecord = this.getOne(new QueryWrapper<ResumeRecord>().eq("job_id", jobId).eq("user_id", userId));
