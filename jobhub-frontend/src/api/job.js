@@ -35,3 +35,10 @@ export const jobCancelCollectService = ({id}) => {
 export const getJobCollectListService = (data) => {
   return request.post('/job/collectedJob', data)
 }
+
+// 根据id获取职位详情
+export const getJobDetailByIdService = ({id}) => {
+  return request.post('/job/getById', {
+    id
+  })
+}

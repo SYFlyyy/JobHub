@@ -1,9 +1,10 @@
 <script setup>
 import { ref } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
-import { getJobWithCompanyService, jobCollectService } from '@/api/job'
+import { getJobWithCompanyService, jobCollectService, getJobDetailByIdService } from '@/api/job'
 import { getCompanyListService } from '@/api/company'
 import { pcaTextArr } from "element-china-area-data";
+import { addResumeRecordServcie } from '@/api/resumeRecord';
 
 const jobList = ref([])
 const loading = ref(false)
@@ -69,8 +70,8 @@ const companyDialogVisible = ref(false)
 const jobDetail = ref({})
 const getJobById = async (id) => {
   params.value.id = id
-  const res = await getJobWithCompanyService(params.value)
-  jobDetail.value = res.data.data.records[0]
+  const res = await getJobDetailByIdService(params.value)
+  jobDetail.value = res.data.data
   jobDialogVisible.value = true
   params.value.id = ''
 }
@@ -141,10 +142,21 @@ const jobCollect = async (id) => {
   })
   collectForm.value.id = id
   await jobCollectService(collectForm.value)
-  ElMessage.success('操作成功')
+  ElMessage.success('收藏成功')
   getJobList()
 }
 
+const deliverForm = ref({})
+const deliver = async (id) => {
+  await ElMessageBox.confirm('确认投递该职位吗？', '温馨提示', {
+    type: 'warning',
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+  })
+  deliverForm.value.id = id
+  await addResumeRecordServcie(deliverForm.value)
+  ElMessage.success('投递成功')
+}
 </script>
 
 <template>
@@ -223,7 +235,7 @@ const jobCollect = async (id) => {
         </el-descriptions>
         <div class="dialog-footer">
           <el-button type="primary" plain @click="jobCollect(jobDetail.id)">收藏</el-button>
-          <el-button type="success" plain @click="deliver">投递</el-button>
+          <el-button type="success" plain @click="deliver(jobDetail.id)">投递</el-button>
         </div>
       </template>
     </el-dialog>

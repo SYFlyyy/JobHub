@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
-import { getJobCollectListService, jobCancelCollectService } from '@/api/job'
+import { getJobCollectListService, jobCancelCollectService, getJobWithCompanyService, getJobDetailByIdService } from '@/api/job'
+import { addResumeRecordServcie } from '@/api/resumeRecord';
 
 const jobList = ref([])
 const loading = ref(false)
@@ -32,8 +33,8 @@ const dialogVisible = ref(false)
 const jobDetail = ref({})
 const getJobById = async (id) => {
   params.value.id = id
-  const res = await getJobCollectListService(params.value)
-  jobDetail.value = res.data.data.records[0]
+  const res = await getJobDetailByIdService(params.value)
+  jobDetail.value = res.data.data
   dialogVisible.value = true
   params.value.id = ''
 }
@@ -81,6 +82,18 @@ const cancelCollect = async (id) => {
   ElMessage.success('操作成功')
   await getJobList()
 }
+
+const deliverForm = ref({})
+const deliver = async (id) => {
+  await ElMessageBox.confirm('确认投递该职位吗？', '温馨提示', {
+    type: 'warning',
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+  })
+  deliverForm.value.id = id
+  await addResumeRecordServcie(deliverForm.value)
+  ElMessage.success('投递成功')
+}
 </script>
 
 <template>
@@ -127,14 +140,17 @@ const cancelCollect = async (id) => {
           :column="4"
           border
         >
-          <el-descriptions-item label="职位名称">{{ jobDetail.name }}</el-descriptions-item>
-          <el-descriptions-item label="职位薪资">{{ jobDetail.salary }}</el-descriptions-item>
-          <el-descriptions-item label="职位类型" :span="1">{{ typeStatus(jobDetail.type) }}</el-descriptions-item>
-          <el-descriptions-item label="所属企业">{{ jobDetail.companyName }}</el-descriptions-item>
-          <el-descriptions-item label="职位详情" :span="4">
+          <el-descriptions-item label-align="center" align="center" label="职位名称">{{ jobDetail.name }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="职位薪资">{{ jobDetail.salary }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="职位类型" :span="1">{{ typeStatus(jobDetail.type) }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="所属企业">{{ jobDetail.companyName }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" label="职位详情" :span="4">
             <div class="long-text">{{ jobDetail.intro }}</div>
           </el-descriptions-item>
         </el-descriptions>
+        <div class="dialog-footer">
+          <el-button type="success" plain @click="deliver(jobDetail.id)">投递</el-button>
+        </div>
       </template>
     </el-dialog>
     <el-pagination
@@ -156,5 +172,11 @@ const cancelCollect = async (id) => {
   overflow-y: auto; /* 当内容超过最大高度时添加垂直滚动条 */
   word-break: break-all;
   white-space: normal;
+}
+.dialog-footer {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  margin-top: 20px; /* 可以根据需要调整顶部间距 */
 }
 </style>
