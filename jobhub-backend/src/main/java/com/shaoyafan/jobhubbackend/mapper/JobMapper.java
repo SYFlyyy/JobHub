@@ -30,6 +30,15 @@ public interface JobMapper extends BaseMapper<Job> {
     @Select("SELECT job.*, company.name as companyName, company.size, company.address FROM job LEFT JOIN company ON job.company_id = company.id WHERE ${ew.sqlSegment}")
     IPage<JobVO> selectJobWithCompany(Page<JobVO> page, @Param("ew") QueryWrapper<Job> QueryWrapper);
 
+    /**
+     * 根据id联表查询职位
+     *
+     * @param id
+     * @return
+     */
+    @Select("SELECT job.*, company.name as companyName, company.size, company.address FROM job LEFT JOIN company ON job.company_id = company.id WHERE job.id = #{id}")
+    JobVO selectJobWithCompanyById(@Param("id") Long id);
+
 }
 
 

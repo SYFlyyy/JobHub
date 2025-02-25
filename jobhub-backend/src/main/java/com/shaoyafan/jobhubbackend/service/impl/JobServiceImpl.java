@@ -216,6 +216,22 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
     }
 
     @Override
+    public JobVO getJobWithCompanyById(JobIdRequest jobIdRequest) {
+        if (jobIdRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
+        }
+        Long id = jobIdRequest.getId();
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "职位id不能为空");
+        }
+        JobVO jobVO = jobMapper.selectJobWithCompanyById(id);
+        if (jobVO == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "职位不存在");
+        }
+        return jobVO;
+    }
+
+    @Override
     public QueryWrapper<Job> getJobQueryWrapper(JobQueryRequest jobQueryRequest) {
         if (jobQueryRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");

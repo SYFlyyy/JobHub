@@ -63,12 +63,20 @@ public interface JobService extends IService<Job> {
     Boolean offlineJob(JobIdRequest jobIdRequest);
 
     /**
-     * 获取职位（含企业信息）
+     * 获取职位分页（含企业信息）
      *
      * @param jobQueryRequest
      * @return
      */
     Page<JobVO> listJobWithCompany(JobQueryRequest jobQueryRequest);
+
+    /**
+     * 获取职位（含企业信息）
+     *
+     * @param jobIdRequest
+     * @return
+     */
+    JobVO getJobWithCompanyById(JobIdRequest jobIdRequest);
 
     /**
      * 获取查询条件

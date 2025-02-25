@@ -38,7 +38,7 @@ public class ResumeRecord implements Serializable {
     private Long resumeId;
 
     /**
-     * 招聘状态
+     * 招聘状态(0-已投递、1-面试中、2-面试通过、3-录用意向、4-已录用、5-流程结束)
      */
     private Integer status;
 

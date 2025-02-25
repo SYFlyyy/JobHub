@@ -198,6 +198,22 @@ public class JobController {
     }
 
     /**
+     * 根据id获取职位详情（包含企业信息）
+     *
+     * @param jobIdRequest
+     * @return
+     */
+    @PostMapping("/getById")
+    @ApiOperation("根据id获取职位详情（包含企业信息）")
+    public BaseResponse<JobVO> getJobById(@RequestBody JobIdRequest jobIdRequest) {
+        if (jobIdRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        JobVO jobVO = jobService.getJobWithCompanyById(jobIdRequest);
+        return ResultUtils.success(jobVO);
+    }
+
+    /**
      * 收藏职位
      *
      * @param jobIdRequest
