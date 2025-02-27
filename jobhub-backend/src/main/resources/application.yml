@@ -3,6 +3,8 @@ server:
   port: 8080
   servlet:
     context-path: /jobhub
+    session:
+      timeout: 3600 # 过期时间 1 小时
 
 spring:
   datasource:
