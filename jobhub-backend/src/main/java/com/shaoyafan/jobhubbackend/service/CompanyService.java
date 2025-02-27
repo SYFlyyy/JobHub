@@ -69,6 +69,14 @@ public interface CompanyService extends IService<Company> {
     Boolean freezeCompany(Long id);
 
     /**
+     * 获取当前用户绑定的企业信息
+     *
+     * @param request
+     * @return
+     */
+    Company getRecruiterCompany(HttpServletRequest request);
+
+    /**
      * 获取查询条件
      *
      * @param companyQueryRequest

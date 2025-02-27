@@ -171,9 +171,9 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company>
             }
             String fileName = companyId + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(LOGO_FILE_PATH + fileName);
-            // 用户是否已上传头像
+            // 用户是否已上传logo
             if (StringUtils.isBlank(company.getLogo())) {
-                // 用户首次上传头像
+                // 用户首次上传logo
                 Files.copy(file.getInputStream(), filePath);
                 company.setLogo(filePath.toString());
                 boolean result = this.updateById(company);
@@ -257,6 +257,20 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company>
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "企业冻结失败");
         }
         return true;
+    }
+
+    @Override
+    public Company getRecruiterCompany(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        Long companyId = loginUser.getCompanyId();
+        if (companyId == null) {
+            return null;
+        }
+        Company company = this.getById(companyId);
+        if (company == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "企业不存在");
+        }
+        return company;
     }
 
     @Override

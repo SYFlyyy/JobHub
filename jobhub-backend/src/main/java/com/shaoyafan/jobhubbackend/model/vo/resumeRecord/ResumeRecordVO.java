@@ -28,6 +28,11 @@ public class ResumeRecordVO implements Serializable {
     private Long userId;
 
     /**
+     * 职位名称
+     */
+    private String jobName;
+
+    /**
      * 求职者姓名
      */
     private String userName;

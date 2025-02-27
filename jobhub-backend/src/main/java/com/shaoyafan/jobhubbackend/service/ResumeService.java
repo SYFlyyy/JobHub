@@ -2,6 +2,7 @@ package com.shaoyafan.jobhubbackend.service;
 
 import com.shaoyafan.jobhubbackend.model.domain.Resume;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.shaoyafan.jobhubbackend.model.dto.resume.ResumeIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.user.UserIdRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -49,5 +50,13 @@ public interface ResumeService extends IService<Resume> {
      * @param request
      * @return
      */
-    String getResumePath(HttpServletRequest request);
+    String getUserResumePath(HttpServletRequest request);
+
+    /**
+     * 招聘者获取简历附件路径
+     *
+     * @param resumeIdRequest
+     * @return
+     */
+    String getResumePath(ResumeIdRequest resumeIdRequest);
 }

@@ -154,4 +154,16 @@ public class CompanyController {
         return ResultUtils.success(result);
     }
 
+    /**
+     * 获取当前用户绑定的企业信息
+     *
+     */
+    @GetMapping("/get")
+    @AuthCheck(mustRole = 2)
+    @ApiOperation("获取当前用户绑定的企业信息")
+    public BaseResponse<Company> getRecruiterCompany(HttpServletRequest request) {
+        Company company = companyService.getRecruiterCompany(request);
+        return ResultUtils.success(company);
+    }
+
 }

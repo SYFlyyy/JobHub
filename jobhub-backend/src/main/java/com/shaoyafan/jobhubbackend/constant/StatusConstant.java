@@ -23,4 +23,9 @@ public interface StatusConstant {
      * 待审核
      */
     Integer PENDING = 2;
+
+    /**
+     * 审核通过
+     */
+    Integer REVIEWED = 3;
 }

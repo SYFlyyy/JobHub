@@ -126,7 +126,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = this.baseMapper.selectOne(queryWrapper);
         // 用户不存在
         if (user == null) {
-            
             log.info("用户登录失败，账号或密码错误");
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "账号或密码错误");
         }

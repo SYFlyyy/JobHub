@@ -7,6 +7,7 @@ import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.Resume;
 import com.shaoyafan.jobhubbackend.model.domain.User;
+import com.shaoyafan.jobhubbackend.model.dto.resume.ResumeIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.user.UserIdRequest;
 import com.shaoyafan.jobhubbackend.service.ResumeService;
 import com.shaoyafan.jobhubbackend.mapper.ResumeMapper;
@@ -172,7 +173,7 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
     }
 
     @Override
-    public String getResumePath(HttpServletRequest request) {
+    public String getUserResumePath(HttpServletRequest request) {
         Long userId = userService.getLoginUser(request).getId();
         Resume resume = this.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
         if (resume == null) {
@@ -180,6 +181,21 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
         }
         if (Objects.equals(resume.getStatus(), StatusConstant.DISABLED)) {
             throw new BusinessException(ErrorCode.STATE_ERROR, "用户已删除简历附件");
+        }
+        return resume.getFilePath();
+    }
+
+    @Override
+    public String getResumePath(ResumeIdRequest resumeIdRequest) {
+        if (resumeIdRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Resume resume = this.getById(resumeIdRequest.getId());
+        if (resume == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "简历附件不存在");
+        }
+        if (Objects.equals(resume.getStatus(), StatusConstant.DISABLED)) {
+            throw new BusinessException(ErrorCode.STATE_ERROR, "简历附件已删除");
         }
         return resume.getFilePath();
     }

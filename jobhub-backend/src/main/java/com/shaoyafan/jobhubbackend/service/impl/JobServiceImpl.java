@@ -146,11 +146,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         if (job == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        if (Objects.equals(job.getStatus(), StatusConstant.NORMAL)) {
+        if (Objects.equals(job.getStatus(), StatusConstant.REVIEWED)) {
             throw new BusinessException(ErrorCode.STATE_ERROR, "职位已通过审核");
         }
         // 审核通过
-        job.setStatus(StatusConstant.NORMAL);
+        job.setStatus(StatusConstant.REVIEWED);
         boolean result = this.updateById(job);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
@@ -192,6 +192,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         Job job = this.getById(id);
         if (job == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        if (Objects.equals(job.getStatus(), StatusConstant.PENDING)) {
+            throw new BusinessException(ErrorCode.STATE_ERROR, "职位待审核中");
         }
         if (Objects.equals(job.getStatus(), StatusConstant.DISABLED)) {
             throw new BusinessException(ErrorCode.STATE_ERROR, "职位已下线");

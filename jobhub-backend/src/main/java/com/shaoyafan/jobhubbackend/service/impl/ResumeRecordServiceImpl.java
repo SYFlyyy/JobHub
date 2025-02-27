@@ -105,12 +105,18 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
 
     @Override
     public Boolean updateResumeRecordStatus(ResumeRecordUpdateStatusRequest resumeRecordUpdateStatusRequest) {
+        // 招聘状态(0-已投递、1-面试中、2-面试通过、3-录用意向、4-已录用、5-流程结束)
         Long resumeRecordIdRequestId = resumeRecordUpdateStatusRequest.getId();
         ResumeRecord resumeRecord = this.getById(resumeRecordIdRequestId);
         if (resumeRecord == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
+        Integer currentStatus = resumeRecord.getStatus();
+        // 需要更新的状态
         Integer status = resumeRecordUpdateStatusRequest.getStatus();
+        if (status <= currentStatus) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "不能修改为当前状态或已结束状态");
+        }
         if (Objects.equals(resumeRecord.getStatus(), HiringStatusConstant.FINISHED)) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前流程已结束");
         }
@@ -146,6 +152,7 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
     public Page<ResumeRecordVO> getResumeRecordVOPage(Page<ResumeRecord> resumeRecordPage) {
         List<ResumeRecord> resumeRecordList = resumeRecordPage.getRecords();
         Page<ResumeRecordVO> resumeRecordVOPage = new Page<>(resumeRecordPage.getCurrent(), resumeRecordPage.getSize());
+        resumeRecordVOPage.setTotal(resumeRecordPage.getTotal());
         if (CollectionUtil.isEmpty(resumeRecordList)) {
             return resumeRecordVOPage;
         }
@@ -159,6 +166,10 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
                     if (applicationInfo != null) {
                         resumeRecordVO.setUserName(applicationInfo.getName());
                     }
+                    Job job = jobService.getById(resumeRecord.getJobId());
+                    if (job != null) {
+                        resumeRecordVO.setJobName(job.getName());
+                    }
                     return resumeRecordVO;
                 }).collect(Collectors.toList());
         return resumeRecordVOPage.setRecords(resumeRecordVOList);
@@ -168,6 +179,7 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
     public Page<UserResumeRecordVO> getUserResumeRecordVOPage(Page<ResumeRecord> resumeRecordPage) {
         List<ResumeRecord> resumeRecordList = resumeRecordPage.getRecords();
         Page<UserResumeRecordVO> userResumeRecordVOPage = new Page<>(resumeRecordPage.getCurrent(), resumeRecordPage.getSize());
+        userResumeRecordVOPage.setTotal(resumeRecordPage.getTotal());
         if (CollectionUtil.isEmpty(resumeRecordList)) {
             return userResumeRecordVOPage;
         }

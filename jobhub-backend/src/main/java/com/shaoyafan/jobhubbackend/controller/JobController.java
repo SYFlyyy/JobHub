@@ -152,7 +152,8 @@ public class JobController {
         if (Objects.equals(loginUser.getRole(), UserRoleEnum.RECRUITER.getValue())) {
             Long companyId = loginUser.getCompanyId();
             if (companyId == null) {
-                throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前用户未绑定企业");
+                return ResultUtils.success(new Page<>(jobQueryRequest.getCurrent(), jobQueryRequest.getPageSize()));
+                // throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前用户未绑定企业");
             }
             jobQueryRequest.setCompanyId(loginUser.getCompanyId());
         }

@@ -2,6 +2,7 @@ package com.shaoyafan.jobhubbackend.controller;
 
 import com.shaoyafan.jobhubbackend.annotation.AuthCheck;
 import com.shaoyafan.jobhubbackend.common.BaseResponse;
+import com.shaoyafan.jobhubbackend.model.dto.resume.ResumeIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.user.UserIdRequest;
 import com.shaoyafan.jobhubbackend.service.ResumeService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
@@ -77,10 +78,23 @@ public class ResumeController {
      * @param request
      * @return
      */
-    @GetMapping("/path")
+    @GetMapping("/userPath")
     @ApiOperation("获取简历附件路径")
-    public BaseResponse<String> getResumePath(HttpServletRequest request) {
-        String resumePath = resumeService.getResumePath(request);
+    public BaseResponse<String> getUserResumePath(HttpServletRequest request) {
+        String resumePath = resumeService.getUserResumePath(request);
+        return ResultUtils.success(resumePath);
+    }
+
+    /**
+     * 招聘者获取简历附件路径
+     *
+     * @param resumeIdRequest
+     * @return
+     */
+    @PostMapping("/path")
+    @ApiOperation("招聘者获取简历附件路径")
+    public BaseResponse<String> getResumePath(@RequestBody ResumeIdRequest resumeIdRequest) {
+        String resumePath = resumeService.getResumePath(resumeIdRequest);
         return ResultUtils.success(resumePath);
     }
 }
