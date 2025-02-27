@@ -10,6 +10,11 @@ export const uploadResumeService = (data) => {
 }
 
 // 获取简历附件路径
-export const getResumePathService = () => {
-  return request.get('/resume/path')
+export const getUserResumePathService = () => {
+  return request.get('/resume/userPath')
+}
+
+// 招聘者获取简历附件路径
+export const getResumePathServie = (data) => {
+  return request.post('/resume/path', data)
 }

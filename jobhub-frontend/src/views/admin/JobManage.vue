@@ -69,6 +69,18 @@ const typeStatus = (row, column, cellValue) => {
       return '未知'   // 如果是其他数字，显示 '未知'
   }
 }
+const jobTypeStatus = (type) => {
+  switch (type) {
+    case 0:
+      return '全职'
+    case 1:
+      return '实习'
+    case 2:
+      return '兼职'
+    default:
+      return '未知'   // 如果是其他数字，显示 '未知'
+  }
+}
 const reviewJob = async (id) => {
   await ElMessageBox.confirm('确认审核通过该职位吗？', '温馨提示', {
     type: 'warning',
@@ -140,11 +152,11 @@ const handleCurrentChange = (page) => {
           :size="size"
           border
         >
-          <el-descriptions-item label="职位名称">{{ jobDetail.name }}</el-descriptions-item>
-          <el-descriptions-item label="职位薪资">{{ jobDetail.salary }}</el-descriptions-item>
-          <el-descriptions-item label="职位类型" :span="1">{{ typeStatus(jobDetail.type) }}</el-descriptions-item>
-          <el-descriptions-item label="所属企业">{{ jobDetail.companyName }}</el-descriptions-item>
-          <el-descriptions-item label="职位详情" :span="4">
+          <el-descriptions-item label-align="center" align="center" label="职位名称">{{ jobDetail.name }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="职位薪资">{{ jobDetail.salary }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="职位类型" :span="1">{{ jobTypeStatus(jobDetail.type) }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="所属企业">{{ jobDetail.companyName }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" label="职位详情" :span="4">
             <div class="long-text">{{ jobDetail.intro }}</div>
           </el-descriptions-item>
         </el-descriptions>

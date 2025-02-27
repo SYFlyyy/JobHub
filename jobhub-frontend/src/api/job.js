@@ -42,3 +42,22 @@ export const getJobDetailByIdService = ({id}) => {
     id
   })
 }
+
+// 上线职位
+export const onlineJobService = ({id}) => {
+  return request.post('/job/online', {
+    id
+  })
+}
+
+// 下线职位
+export const offlineJobService = ({id}) => {
+  return request.post('/job/offline', {
+    id
+  })
+}
+
+// 新增职位
+export const addJobService = (data) => {
+  return request.post('/job/add', data)
+}

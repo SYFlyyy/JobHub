@@ -7,7 +7,6 @@ const companyList = ref([])
 
 const total = ref(0)
 
-
 const loading = ref(false)
 const params = ref({
   id: '',

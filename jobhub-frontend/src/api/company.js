@@ -18,3 +18,18 @@ export const freezeCompanyService = ({id}) => {
     id
   })
 }
+
+// 企业注册
+export const registerCompanyService = (data) => {
+  return request.post('/company/add', data)
+}
+
+// 上传logo
+export const uploadLogoService = (data) => {
+  return request.post('/company/upload/logo', data)
+}
+
+// 获取企业信息
+export const getCompanyInfoService = () => {
+  return request.get('/company/get')
+}

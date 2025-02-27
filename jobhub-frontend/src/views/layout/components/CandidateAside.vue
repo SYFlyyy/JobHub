@@ -1,3 +1,19 @@
+<script setup>
+import {
+  User,
+  Suitcase,
+  View,
+  CollectionTag,
+  Message,
+  ChatLineSquare,
+  Crop,
+  EditPen,
+  Tickets,
+  MessageBox,
+  Bell
+} from '@element-plus/icons-vue'
+</script>
+
 <template>
   <el-aside width="220px">
     <div class="el-aside__logo"></div>
@@ -65,22 +81,6 @@
     </el-menu>
   </el-aside>
 </template>
-
-<script setup>
-import {
-  User,
-  Suitcase,
-  View,
-  CollectionTag,
-  Message,
-  ChatLineSquare,
-  Crop,
-  EditPen,
-  Tickets,
-  MessageBox,
-  Bell
-} from '@element-plus/icons-vue'
-</script>
 
 <style lang="scss" scoped>
 .el-aside {

@@ -11,3 +11,12 @@ export const addResumeRecordServcie = ({id}) => {
 export const getCandidateResumeRecordService = (data) => {
   return request.post('/resumeRecord/list/page/my', data)
 }
+
+// 获取招聘记录
+export const getResumeRecordService = (data) => {
+  return request.post('/resumeRecord/list/page', data)
+}
+
+export const updateResumeRecordService = (data) => {
+  return request.post('/resumeRecord/update/status', data)
+}

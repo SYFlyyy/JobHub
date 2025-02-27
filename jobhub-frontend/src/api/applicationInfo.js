@@ -19,3 +19,8 @@ export const getOwnApplicationInfoService = () => {
 export const hasApplicationInfoService = () => {
   return request.get('/applicationInfo/has')
 }
+
+// 查看求职者在线简历
+export const getApplicationInfoService = (data) => {
+  return request.post('/applicationInfo/getUser', data)
+}

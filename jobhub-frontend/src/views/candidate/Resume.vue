@@ -1,3 +1,57 @@
+<script setup>
+import { ref } from 'vue'
+import { uploadResumeService, getUserResumePathService } from '@/api/resume'
+import { Document, Plus, Upload } from '@element-plus/icons-vue'
+
+const uploadRef = ref()
+const selectedFile = ref(null)
+const resumePath = ref('')
+
+const getResume = async () => {
+  const res = await getUserResumePathService()
+  resumePath.value = res.data.data
+}
+getResume()
+
+const handleFileChange = (file, fileList) => {
+  if (fileList.length > 1) {
+    fileList.splice(0, 1) // 保留第一个文件
+  }
+  const uploadFile = fileList[0]
+  const validTypes = ['image/jpeg', 'image/png', 'application/pdf']
+  if (!validTypes.includes(uploadFile.raw.type)) {
+    ElMessage.error('仅支持 JPG/PNG/PDF 格式的文件')
+    return
+  }
+  if (uploadFile.raw.size > 10 * 1024 * 1024) {
+    ElMessage.error('文件大小不能超过 10MB')
+    return
+  }
+  selectedFile.value = uploadFile.raw
+}
+
+const handleUpload = async () => {
+  if (!selectedFile.value) {
+    ElMessage.error('请先选择需要上传的文件')
+    return
+  }
+  const formData = new FormData()
+  formData.append('file', selectedFile.value)
+  try {
+    await uploadResumeService(formData)
+    const res = await getUserResumePathService()
+    resumePath.value = res.data.data
+    ElMessage.success('简历上传成功')
+  } catch (error) {
+    ElMessage.error('简历上传失败')
+  } finally {
+    selectedFile.value = null
+    uploadRef.value.clearFiles() // 清空已选择的文件
+  }
+}
+
+</script>
+
 <template>
   <el-card style="width: 300px; max-height: 400px;">
     <template #header>
@@ -47,61 +101,6 @@
     </div>
   </el-card>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { uploadResumeService, getResumePathService } from '@/api/resume'
-import { ElMessage } from 'element-plus'
-import { Document, Plus, Upload } from '@element-plus/icons-vue'
-
-const uploadRef = ref()
-const selectedFile = ref(null)
-const resumePath = ref('')
-
-const getResume = async () => {
-  const res = await getResumePathService()
-  resumePath.value = res.data.data
-}
-getResume()
-
-const handleFileChange = (file, fileList) => {
-  if (fileList.length > 1) {
-    fileList.splice(0, 1) // 保留第一个文件
-  }
-  const uploadFile = fileList[0]
-  const validTypes = ['image/jpeg', 'image/png', 'application/pdf']
-  if (!validTypes.includes(uploadFile.raw.type)) {
-    ElMessage.error('仅支持 JPG/PNG/PDF 格式的文件')
-    return
-  }
-  if (uploadFile.raw.size > 10 * 1024 * 1024) {
-    ElMessage.error('文件大小不能超过 10MB')
-    return
-  }
-  selectedFile.value = uploadFile.raw
-}
-
-const handleUpload = async () => {
-  if (!selectedFile.value) {
-    ElMessage.error('请先选择需要上传的文件')
-    return
-  }
-  const formData = new FormData()
-  formData.append('file', selectedFile.value)
-  try {
-    await uploadResumeService(formData)
-    const res = await getResumePathService()
-    resumePath.value = res.data.data
-    ElMessage.success('简历上传成功')
-  } catch (error) {
-    ElMessage.error('简历上传失败')
-  } finally {
-    selectedFile.value = null
-    uploadRef.value.clearFiles() // 清空已选择的文件
-  }
-}
-
-</script>
 
 <style lang="scss" scoped>
 .el-card {

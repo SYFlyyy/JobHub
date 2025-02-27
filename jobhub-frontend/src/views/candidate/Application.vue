@@ -1,87 +1,9 @@
-<template>
-  <page-container>
-    <template #title>
-      <div>个人简历</div>
-    </template>
-    <el-row :gutter="30" class="form-container">
-      <el-col :span="16">
-        <el-form :model="applicationInfo" :rules="rules" ref="applicationForm" label-width="120px" size="large" class="applicationInfo-form">
-        <el-form-item label="姓名">
-          <div v-if="!isEditing">{{ applicationInfo.name }}</div>
-          <el-input v-else v-model="applicationInfo.name"></el-input>
-        </el-form-item>
-        <el-form-item label="性别">
-          <div v-if="!isEditing && applicationInfo.gender !== null">{{ applicationInfo.gender === 0 ? '男' : '女' }}</div>
-          <el-radio-group v-else-if="isEditing" v-model="applicationInfo.gender">
-            <el-radio :label="0">男</el-radio>
-            <el-radio :label="1">女</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="出生日期">
-          <div v-if="!isEditing">{{ formatDate(applicationInfo.birthDate) }}</div>
-          <el-date-picker v-else v-model="applicationInfo.birthDate" type="date" placeholder="选择日期"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="手机" prop="phone">
-          <div v-if="!isEditing">{{ applicationInfo.phone }}</div>
-          <el-input v-else v-model="applicationInfo.phone"></el-input>
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <div v-if="!isEditing">{{ applicationInfo.email }}</div>
-          <el-input v-else v-model="applicationInfo.email"></el-input>
-        </el-form-item>
-        <el-form-item label="地址">
-          <div v-if="!isEditing">{{ applicationInfo.address }}</div>
-          <el-input v-else v-model="applicationInfo.address"></el-input>
-        </el-form-item>
-        <el-form-item label="学校">
-          <div v-if="!isEditing">{{ applicationInfo.school }}</div>
-          <el-input v-else v-model="applicationInfo.school"></el-input>
-        </el-form-item>
-        <el-form-item label="专业">
-          <div v-if="!isEditing">{{ applicationInfo.major }}</div>
-          <el-input v-else v-model="applicationInfo.major"></el-input>
-        </el-form-item>
-        <el-form-item label="毕业时间">
-          <div v-if="!isEditing">{{ formatDate(applicationInfo.graduation) }}</div>
-          <el-date-picker v-else v-model="applicationInfo.graduation" type="date" placeholder="选择日期"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="荣誉证书">
-          <div v-if="!isEditing">{{ applicationInfo.honor }}</div>
-          <el-input type="textarea" v-else v-model="applicationInfo.honor" class="textarea-input"></el-input>
-        </el-form-item>
-        <el-form-item label="专业技能">
-          <div v-if="!isEditing">{{ applicationInfo.skill }}</div>
-          <el-input type="textarea" v-else v-model="applicationInfo.skill" class="textarea-input"></el-input>
-        </el-form-item>
-        <el-form-item label="项目经历">
-          <div v-if="!isEditing">{{ applicationInfo.projectExperience }}</div>
-          <el-input type="textarea" v-else v-model="applicationInfo.projectExperience" class="textarea-input"></el-input>
-        </el-form-item>
-        <el-form-item label="工作/实习经历">
-          <div v-if="!isEditing">{{ applicationInfo.workExperience }}</div>
-          <el-input type="textarea" v-else v-model="applicationInfo.workExperience" class="textarea-input"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="isEditing ? submitApplicationInfo() : isEditing = true">
-            {{ isEditing ? '提交' : '编辑' }}
-          </el-button>
-        </el-form-item>
-      </el-form>
-      </el-col>
-      <el-col :span="8" class="resume">
-        <Resume></Resume>
-      </el-col>
-    </el-row>
-  </page-container>
-</template>
-
 <script setup>
 import { ref } from 'vue'
 import dayjs from 'dayjs'
 import PageContainer from '@/views/layout/PageContainer.vue'
 import { addApplicationInfoService, updateApplicationInfoService, hasApplicationInfoService, getOwnApplicationInfoService } from '@/api/applicationInfo'
 import { useUserStore } from '@/stores/user'
-import { ElMessage } from 'element-plus'
 import Resume from './Resume.vue'
 
 const applicationInfo = ref({
@@ -144,6 +66,83 @@ const submitApplicationInfo = async () => {
 
 const applicationForm = ref(null)
 </script>
+
+<template>
+  <page-container>
+    <template #title>
+      <div>个人简历</div>
+    </template>
+    <el-row :gutter="30" class="form-container">
+      <el-col :span="16">
+        <el-form :model="applicationInfo" :rules="rules" ref="applicationForm" label-width="120px" size="large" class="applicationInfo-form">
+          <el-form-item label="姓名">
+            <div v-if="!isEditing">{{ applicationInfo.name }}</div>
+            <el-input v-else v-model="applicationInfo.name"></el-input>
+          </el-form-item>
+          <el-form-item label="性别">
+            <div v-if="!isEditing && applicationInfo.gender !== null">{{ applicationInfo.gender === 0 ? '男' : '女' }}</div>
+            <el-radio-group v-else-if="isEditing" v-model="applicationInfo.gender">
+              <el-radio :label="0">男</el-radio>
+              <el-radio :label="1">女</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="出生日期">
+            <div v-if="!isEditing">{{ formatDate(applicationInfo.birthDate) }}</div>
+            <el-date-picker v-else v-model="applicationInfo.birthDate" type="date" placeholder="选择日期"></el-date-picker>
+          </el-form-item>
+          <el-form-item label="手机" prop="phone">
+            <div v-if="!isEditing">{{ applicationInfo.phone }}</div>
+            <el-input v-else v-model="applicationInfo.phone"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <div v-if="!isEditing">{{ applicationInfo.email }}</div>
+            <el-input v-else v-model="applicationInfo.email"></el-input>
+          </el-form-item>
+          <el-form-item label="地址">
+            <div v-if="!isEditing">{{ applicationInfo.address }}</div>
+            <el-input v-else v-model="applicationInfo.address"></el-input>
+          </el-form-item>
+          <el-form-item label="学校">
+            <div v-if="!isEditing">{{ applicationInfo.school }}</div>
+            <el-input v-else v-model="applicationInfo.school"></el-input>
+          </el-form-item>
+          <el-form-item label="专业">
+            <div v-if="!isEditing">{{ applicationInfo.major }}</div>
+            <el-input v-else v-model="applicationInfo.major"></el-input>
+          </el-form-item>
+          <el-form-item label="毕业时间">
+            <div v-if="!isEditing">{{ formatDate(applicationInfo.graduation) }}</div>
+            <el-date-picker v-else v-model="applicationInfo.graduation" type="date" placeholder="选择日期"></el-date-picker>
+          </el-form-item>
+          <el-form-item label="荣誉证书">
+            <div v-if="!isEditing">{{ applicationInfo.honor }}</div>
+            <el-input type="textarea" v-else v-model="applicationInfo.honor" class="textarea-input"></el-input>
+          </el-form-item>
+          <el-form-item label="专业技能">
+            <div v-if="!isEditing">{{ applicationInfo.skill }}</div>
+            <el-input type="textarea" v-else v-model="applicationInfo.skill" class="textarea-input"></el-input>
+          </el-form-item>
+          <el-form-item label="项目经历">
+            <div v-if="!isEditing">{{ applicationInfo.projectExperience }}</div>
+            <el-input type="textarea" v-else v-model="applicationInfo.projectExperience" class="textarea-input"></el-input>
+          </el-form-item>
+          <el-form-item label="工作/实习经历">
+            <div v-if="!isEditing">{{ applicationInfo.workExperience }}</div>
+            <el-input type="textarea" v-else v-model="applicationInfo.workExperience" class="textarea-input"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="isEditing ? submitApplicationInfo() : isEditing = true">
+              {{ isEditing ? '提交' : '编辑' }}
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+      <el-col :span="8" class="resume">
+        <Resume></Resume>
+      </el-col>
+    </el-row>
+  </page-container>
+</template>
 
 <style lang="scss" scoped>
 .applicationInfo-form {

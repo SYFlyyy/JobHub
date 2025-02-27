@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/stores/user'
 
 const baseURL = 'http://localhost:8080/jobhub'
 
@@ -32,6 +33,12 @@ instance.interceptors.response.use(
   },
   (err) => {
     // TODO 5. 处理401错误
+    if (err.response && err.response.status === 401) {
+      const userStore = useUserStore()
+      userStore.clearLoginUser()
+      ElMessage.error('请重新登录')
+      window.location.href = '/login'
+    }
     // 错误默认情况
     ElMessage.error(res.response.data.message || '服务异常')
     return Promise.reject(err)

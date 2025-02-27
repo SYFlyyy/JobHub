@@ -8,6 +8,7 @@ const loading = ref(false)
 const resumeRecordList = ref([])
 const total = ref(0)
 const params = ref({
+  status: '',
   pageSize: 5,
   current: 1
 })
@@ -17,6 +18,7 @@ const getResumeRecordList = async () => {
   const res = await getCandidateResumeRecordService(params.value)
   resumeRecordList.value = res.data.data.records
   total.value = parseInt(res.data.data.total)
+  console.log(total.value)
   loading.value = false
 }
 // 初始加载投递记录数据
@@ -73,6 +75,19 @@ const typeStatus = (row, column, cellValue) => {
   }
 }
 
+const jobTypeStatus = (type) => {
+  switch (type) {
+    case 0:
+      return '全职'
+    case 1:
+      return '实习'
+    case 2:
+      return '兼职'
+    default:
+      return '未知'   // 如果是其他数字，显示 '未知'
+  }
+}
+
 </script>
 
 <template>
@@ -80,6 +95,10 @@ const typeStatus = (row, column, cellValue) => {
     <template #title>
       投递记录
     </template>
+    <!-- 根据状态搜索 -->
+    <el-form>
+
+    </el-form>
     <el-table v-loading="loading" :data="resumeRecordList" style="width: 100%" :row-style="{ height: '60px' }">
       <el-table-column prop="jobName" label="职位名称" align="center"></el-table-column>
       <el-table-column prop="salary" label="薪资" align="center"></el-table-column>
@@ -110,7 +129,7 @@ const typeStatus = (row, column, cellValue) => {
         >
           <el-descriptions-item label-align="center" align="center" label="职位名称">{{ jobDetail.name }}</el-descriptions-item>
           <el-descriptions-item label-align="center" align="center" label="职位薪资">{{ jobDetail.salary }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="职位类型" :span="1">{{ typeStatus(jobDetail.type) }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="职位类型" :span="1">{{ jobTypeStatus(jobDetail.type) }}</el-descriptions-item>
           <el-descriptions-item label-align="center" align="center" label="所属企业">{{ jobDetail.companyName }}</el-descriptions-item>
           <el-descriptions-item label-align="center" label="职位详情" :span="4">
             <div class="long-text">{{ jobDetail.intro }}</div>
