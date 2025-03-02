@@ -4,6 +4,7 @@ import PageContainer from '@/views/layout/PageContainer.vue'
 import { getCompanyInfoService, registerCompanyService, uploadLogoService } from '@/api/company'
 import { Upload, Plus } from '@element-plus/icons-vue'
 import { pcaTextArr } from "element-china-area-data";
+import avatar from '@/assets/default.png'
 
 const uploadRef = ref()
 const loading = ref(false)
@@ -32,7 +33,7 @@ const imgUrl = ref(getFullAvatarUrl(companyInfo.value?.logo))
 
 // 获取完整头像地址（带时间戳避免缓存）
 function getFullAvatarUrl(path) {
-  if (!path) return '@/assets/avatar.jpg'
+  if (!path) return avatar
   return `http://localhost:8080/jobhub/${path}?t=${Date.now()}`
 }
 
@@ -317,7 +318,6 @@ const handleRegister = async () => {
 
   &:hover {
     transform: scale(1.05);
-
     .avatar-mask {
       opacity: 1;
     }

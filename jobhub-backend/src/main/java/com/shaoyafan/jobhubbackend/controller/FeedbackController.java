@@ -7,6 +7,7 @@ import com.shaoyafan.jobhubbackend.common.ErrorCode;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.Feedback;
 import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackAddRequest;
+import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackQueryRequest;
 import com.shaoyafan.jobhubbackend.service.FeedbackService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
@@ -53,13 +54,28 @@ public class FeedbackController {
     }
 
     /**
+     * 根据id获取反馈
+     *
+     * @param feedbackIdRequest
+     * @return
+     */
+    @PostMapping("/get")
+    @ApiOperation("根据id获取反馈")
+    public BaseResponse<Feedback> getFeedbackById(@RequestBody FeedbackIdRequest feedbackIdRequest) {
+        if (feedbackIdRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Feedback feedback = feedbackService.getFeedbackById(feedbackIdRequest);
+        return ResultUtils.success(feedback);
+    }
+
+    /**
      * 分页获取反馈列表
      *
      * @param feedbackQueryRequest
      * @return
      */
     @PostMapping("/list/page")
-    @AuthCheck(mustRole = 0)
     @ApiOperation("分页获取反馈列表")
     public BaseResponse<Page<Feedback>> listFeedbackByPage(@RequestBody FeedbackQueryRequest feedbackQueryRequest) {
         if (feedbackQueryRequest == null) {

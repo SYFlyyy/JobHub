@@ -50,7 +50,7 @@ import {
       <!-- 公告 -->
       <el-menu-item index="/notice/admin">
         <el-icon><Bell /></el-icon>
-        <span>公告</span>
+        <span>公告管理</span>
       </el-menu-item>
       <!-- 用户反馈 -->
       <el-menu-item index="/feedback/admin">

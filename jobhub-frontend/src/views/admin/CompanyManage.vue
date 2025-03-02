@@ -54,6 +54,8 @@ const formatStatus = (row, column, cellValue) => {
       return '冻结'   // 对应数字 1 显示 '禁用'
     case 2:
       return '待审核' // 对应数字 2 显示 '待审核'
+    case 3:
+      return '审核通过' // 对应数字 3 显示 '审核通过'
     default:
       return '未知'   // 如果是其他数字，显示 '未知'
   }

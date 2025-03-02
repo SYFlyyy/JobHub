@@ -8,6 +8,7 @@ import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.Notice;
 import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeAddRequest;
+import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeUpdateRequest;
 import com.shaoyafan.jobhubbackend.service.NoticeService;
@@ -43,6 +44,19 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
         return notice.getId();
+    }
+
+    @Override
+    public Notice getNoticeById(NoticeIdRequest noticeIdRequest) {
+        Long id = noticeIdRequest.getId();
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Notice notice = this.getById(id);
+        if (notice == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        return notice;
     }
 
     @Override

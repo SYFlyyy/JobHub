@@ -1,5 +1,6 @@
 package com.shaoyafan.jobhubbackend.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -61,6 +62,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         Company company = companyService.getById(companyId);
         if (company == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "企业不存在");
+        }
+        if (Objects.equals(company.getStatus(), StatusConstant.PENDING)) {
+            throw new BusinessException(ErrorCode.STATE_ERROR, "企业待审核中");
         }
         // String companyName = company.getName();
         String name = jobAddRequest.getName();
@@ -129,6 +133,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         job.setType(type);
         job.setIntro(intro);
         job.setSalary(salary);
+        // 更新后状态变为待审核
+        job.setStatus(StatusConstant.PENDING);
         boolean result = this.updateById(job);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
@@ -305,6 +311,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         String sortOrder = jobQueryRequest.getSortOrder();
         // 获取用户收藏的职位id
         List<Long> jobIds = jobCollectionMapper.getJobIdByUserId(userId);
+        if (CollectionUtil.isEmpty(jobIds)) {
+            return new Page<>();
+        }
         QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("job.id", jobIds);
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC), sortField);

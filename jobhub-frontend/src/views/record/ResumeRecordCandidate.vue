@@ -18,7 +18,6 @@ const getResumeRecordList = async () => {
   const res = await getCandidateResumeRecordService(params.value)
   resumeRecordList.value = res.data.data.records
   total.value = parseInt(res.data.data.total)
-  console.log(total.value)
   loading.value = false
 }
 // 初始加载投递记录数据

@@ -34,7 +34,6 @@ const getJobById = async (id) => {
   params.value.id = id
   const res = await getJobListService(params.value)
   jobDetail.value = res.data.data.records[0]
-  console.log(jobDetail.value)
   detailDialogVisible.value = true
   params.value.id = ''
 }
@@ -43,7 +42,7 @@ const handleDetailDialogClose = () => {
   detailDialogVisible.value = false
 }
 
-// 初始加载职位数据
+// 初始加载数据
 getJobList()
 
 const formatStatus = (row, column, cellValue) => {
@@ -258,7 +257,6 @@ const handleAddDialogClose = () => {
           title="职位详情"
           direction="vertical"
           :column="3"
-          :size="size"
           border
         >
           <el-descriptions-item label-align="center" align="center" label="职位名称">{{ jobDetail.name }}</el-descriptions-item>

@@ -208,7 +208,9 @@ const resetParams = () => {
           <el-table-column prop="username" label="姓名" align="center"></el-table-column>
           <el-table-column prop="avatar" label="头像" align="center">
             <template #default="{ row }">
-              <el-avatar :src="'http://localhost:8080/jobhub/' + row.avatar" />
+              <el-avatar v-if="row.avatar" :src="'http://localhost:8080/jobhub/' + row.avatar" />
+              <!-- dddddddddddddddddddddd -->
+              <el-avatar v-else src="@/assets/default.png"/>
             </template>
           </el-table-column>
           <el-table-column prop="email" label="邮箱" align="center"></el-table-column>

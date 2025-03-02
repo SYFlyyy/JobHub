@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shaoyafan.jobhubbackend.model.domain.Notice;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeAddRequest;
+import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.notice.NoticeUpdateRequest;
 
@@ -23,6 +24,14 @@ public interface NoticeService extends IService<Notice> {
      * @return
      */
     Long addNotice(NoticeAddRequest noticeAddRequest);
+
+    /**
+     * 根据id获取公告
+     *
+     * @param noticeIdRequest
+     * @return
+     */
+    Notice getNoticeById(NoticeIdRequest noticeIdRequest);
 
     /**
      * 更新公告

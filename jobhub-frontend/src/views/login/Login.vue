@@ -41,12 +41,19 @@ const rules = {
       },
       trigger: 'change'
     }
+  ],
+  role: [
+    { required: true, message: '请选择角色', trigger: 'blur'}
   ]
 }
 const register = async () => {
   await form.value.validate()
   await userRegisterService(formModel.value)
-  ElMessage.success('注册成功')
+  if (formModel.value.role === '1') {
+    ElMessage.success('注册成功')
+  } else {
+    ElMessage.success('注册成功，请等待管理员审核')
+  }
   // 注册成功后跳转到登录页
   isRegister.value = false
 }
@@ -80,7 +87,7 @@ watch(isRegister, () => {
         <el-form
           :model="formModel"
           :rules="rules"
-          style="width: 300px"
+          style="width: 300px; height:530px"
           ref="form"
           size="large"
           autocomplete="off"
@@ -112,7 +119,7 @@ watch(isRegister, () => {
                 placeholder="请输入确认密码"
               ></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="role">
               <el-radio-group v-model="formModel.role">
                 <el-radio value="1">求职者</el-radio>
                 <el-radio value="2">招聘者</el-radio>
@@ -130,23 +137,23 @@ watch(isRegister, () => {
 
           <!-- 登录表单 -->
           <el-form
-          :model="formModel"
-          :rules="rules"
-          ref="form"
-          style="width: 300px"
-          size="large"
-          autocomplete="off" v-else>
+            :model="formModel"
+            :rules="rules"
+            ref="form"
+            style="width: 300px; height: 530px"
+            size="large"
+            autocomplete="off" v-else>
             <el-form-item>
               <h1>登录</h1>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="account">
               <el-input
               v-model="formModel.account"
               :prefix-icon="User"
               placeholder="请输入用户名"
               ></el-input>
             </el-form-item>
-            <el-form-item>
+            <el-form-item prop="password">
               <el-input
                 v-model="formModel.password"
                 name="password"
@@ -154,12 +161,6 @@ watch(isRegister, () => {
                 type="password"
                 placeholder="请输入密码"
               ></el-input>
-            </el-form-item>
-            <el-form-item class="flex">
-              <div class="flex">
-                <el-checkbox>记住我</el-checkbox>
-                <el-link type="primary" :underline="false">忘记密码？</el-link>
-              </div>
             </el-form-item>
             <el-form-item>
               <el-button @click="login" class="button" type="primary" auto-insert-space>登录</el-button>
@@ -186,10 +187,9 @@ watch(isRegister, () => {
   align-items: center;
   .header {
     text-align: center;
-    height: 50px;
+    height: 100px;
     line-height: 44px;
     padding: 0px 0 4px; // 调整 padding 以减少间距
-    // margin-bottom: 0px; // 增加 header 和 login-page 之间的距离
     .logo {
       height: 55px;
       vertical-align: top;
@@ -206,24 +206,11 @@ watch(isRegister, () => {
     }
   }
   .login-page {
-    // display: flex;
-    // justify-content: center;
-    // align-items: center; // 使表单垂直居中
     display: flex;
     justify-content: center;
     align-items: center;
-    /* 新增：固定表单容器高度 */
-    height: 458px;  // 根据实际内容调整这个值
-    margin-top: 0;  // 保持与header的固定间距
+    height: 580px;  // 根据实际内容调整这个值
     .form {
-      // display: flex;
-      // flex-direction: column;
-      // justify-content: center;
-      // align-items: center;
-      // width: 100%;
-      // max-width: 400px; // 恢复最大宽度
-      // padding: 20px;
-      // background-color: transparent;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -238,11 +225,6 @@ watch(isRegister, () => {
       .button {
         width: 100%;
         margin-top: 20px;
-      }
-      .flex {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
       }
     }
   }

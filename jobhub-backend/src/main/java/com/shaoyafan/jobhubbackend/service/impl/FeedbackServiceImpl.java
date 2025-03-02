@@ -8,6 +8,7 @@ import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.Feedback;
 import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackAddRequest;
+import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackQueryRequest;
 import com.shaoyafan.jobhubbackend.service.FeedbackService;
 import com.shaoyafan.jobhubbackend.mapper.FeedbacckMapper;
@@ -48,6 +49,19 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbacckMapper, Feedback>
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
         return feedback.getId();
+    }
+
+    @Override
+    public Feedback getFeedbackById(FeedbackIdRequest feedbackIdRequest) {
+        Long id = feedbackIdRequest.getId();
+        if (id == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "请求参数为空");
+        }
+        Feedback feedback = this.getById(id);
+        if (feedback == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+        return feedback;
     }
 
     @Override

@@ -107,7 +107,7 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
         Long userId = userService.getLoginUser(request).getId();
         ApplicationInfo applicationInfo = this.getOne(new QueryWrapper<ApplicationInfo>().eq("user_id", userId));
         if (applicationInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "当前用户暂无在线简历");
+            return null;
         }
         return applicationInfo;
     }

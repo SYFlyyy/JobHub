@@ -110,9 +110,11 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company>
         if (StringUtils.isBlank(name)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "企业名称不能为空");
         }
-        Company sameNameCompany = this.getOne(new QueryWrapper<Company>().eq("name", name));
-        if (sameNameCompany != null) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "企业名称已经存在");
+        if (!name.equals(company.getName())) {
+            Company sameNameCompany = this.getOne(new QueryWrapper<Company>().eq("name", name));
+            if (sameNameCompany != null) {
+                throw new BusinessException(ErrorCode.OPERATION_ERROR, "企业名称已经存在");
+            }
         }
         String intro = companyUpdateRequest.getIntro();
         if (StringUtils.isBlank(intro)) {
@@ -135,6 +137,8 @@ public class CompanyServiceImpl extends ServiceImpl<CompanyMapper, Company>
         company.setAddress(address);
         company.setType(type);
         company.setSize(size);
+        // 更新后状态变为待审核
+        company.setStatus(StatusConstant.PENDING);
         boolean result = this.updateById(company);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);

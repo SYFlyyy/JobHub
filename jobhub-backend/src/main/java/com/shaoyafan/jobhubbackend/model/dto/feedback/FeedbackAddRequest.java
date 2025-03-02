@@ -3,6 +3,8 @@ package com.shaoyafan.jobhubbackend.model.dto.feedback;
 import lombok.Data;
 
 /**
+ * 反馈新增请求
+ *
  * @author SYF
  */
 @Data

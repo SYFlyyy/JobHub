@@ -23,7 +23,13 @@ public class SessionFilter implements Filter {
         String requestURI = httpRequest.getRequestURI();
 
         // 登录和注册接口不需要校验
-        if (requestURI.equals("/jobhub/user/login") || requestURI.equals("/jobhub/user/register")) {
+        if (requestURI.equals("/jobhub/user/login")
+                || requestURI.equals("/jobhub/user/register")
+                || requestURI.startsWith("/jobhub/doc.html")
+                || requestURI.startsWith("/jobhub/webjars")
+                || requestURI.startsWith("/jobhub/swagger-resources")
+                || requestURI.startsWith("/jobhub/v2/api-docs")
+        ) {
             chain.doFilter(request, response);
             return;
         }

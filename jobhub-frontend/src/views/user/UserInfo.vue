@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/user';
 import { ref } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
 import { updateUserInfoService } from '@/api/user'
+import avatar from '@/assets/default.png'
 const {
   loginUser: { account, username, email, phone },
   getLoginUser
@@ -54,7 +55,7 @@ const selectedFile = ref(null)
 
 // 获取完整头像地址（带时间戳避免缓存）
 function getFullAvatarUrl(path) {
-  if (!path) return '@/assets/avatar.jpg'
+  if (!path) return avatar
   return `http://localhost:8080/jobhub/${path}?t=${Date.now()}`
 }
 

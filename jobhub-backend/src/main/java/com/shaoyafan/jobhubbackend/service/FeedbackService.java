@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.shaoyafan.jobhubbackend.model.domain.Feedback;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackAddRequest;
+import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackIdRequest;
 import com.shaoyafan.jobhubbackend.model.dto.feedback.FeedbackQueryRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,15 @@ public interface FeedbackService extends IService<Feedback> {
      * @return
      */
     Long addFeedback(FeedbackAddRequest feedbackAddRequest, HttpServletRequest request);
+
+
+    /**
+     * 根据id获取反馈
+     *
+     * @param feedbackIdRequest
+     * @return
+     */
+    Feedback getFeedbackById(FeedbackIdRequest feedbackIdRequest);
 
     /**
      * 构建查询条件

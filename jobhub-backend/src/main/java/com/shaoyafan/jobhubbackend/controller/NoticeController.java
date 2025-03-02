@@ -55,6 +55,22 @@ public class NoticeController {
     }
 
     /**
+     * 根据id获取公告
+     *
+     * @param noticeIdRequest
+     * @return
+     */
+    @PostMapping("/get")
+    @ApiOperation("根据id获取公告")
+    public BaseResponse<Notice> getNoticeById(@RequestBody NoticeIdRequest noticeIdRequest) {
+        if (noticeIdRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Notice notice = noticeService.getNoticeById(noticeIdRequest);
+        return ResultUtils.success(notice);
+    }
+
+    /**
      * 编辑公告
      *
      * @param noticeUpdateRequest
@@ -120,7 +136,6 @@ public class NoticeController {
      * @return
      */
     @PostMapping("/list/page")
-    @AuthCheck(mustRole = 0)
     @ApiOperation("分页获取公告列表")
     public BaseResponse<Page<Notice>> listNoticeByPage(@RequestBody NoticeQueryRequest noticeQueryRequest) {
         if (noticeQueryRequest == null) {
