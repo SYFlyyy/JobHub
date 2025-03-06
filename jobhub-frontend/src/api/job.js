@@ -61,3 +61,8 @@ export const offlineJobService = ({id}) => {
 export const addJobService = (data) => {
   return request.post('/job/add', data)
 }
+
+// 更新职位
+export const updateJobService = (data) => {
+  return request.post('/job/update', data)
+}

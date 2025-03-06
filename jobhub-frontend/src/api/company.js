@@ -33,3 +33,8 @@ export const uploadLogoService = (data) => {
 export const getCompanyInfoService = () => {
   return request.get('/company/get')
 }
+
+// 更新企业信息
+export const updateCompanyInfoService = (data) => {
+  return request.post('/company/update', data)
+}

@@ -120,6 +120,63 @@ const handleAddDialogClose = () => {
     }
   addDialogVisible.value = false
 }
+
+const editDialogVisible = ref(false)
+const editForm = ref({
+  id: '',
+  title: '',
+  content: '',
+})
+
+// 获取公告详情用于编辑
+const getNoticeForEdit = async (id) => {
+  params.value.id = id
+  const res = await getNoticeByIdService(params.value)
+  editForm.value = {
+    id: res.data.data.id,
+    title: res.data.data.title,
+    content: res.data.data.content
+  }
+  editDialogVisible.value = true
+  params.value.id = ''
+}
+
+// 更新公告方法
+const updateNotice = (id) => {
+  getNoticeForEdit(id)
+}
+
+// 提交编辑
+const handleEditSubmit = async () => {
+  try {
+    await ElMessageBox.confirm('确认修改公告信息吗？', '温馨提示', {
+      type: 'warning',
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+    })
+
+    const res = await updateNoticeService(editForm.value)
+    if (res.data.data) {
+      ElMessage.success('修改成功')
+      editDialogVisible.value = false
+      getNoticeList()
+    }
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('修改失败')
+    }
+  }
+}
+
+// 关闭编辑弹窗
+const handleEditDialogClose = () => {
+  editForm.value = {
+    id: '',
+    title: '',
+    content: '',
+  }
+  editDialogVisible.value = false
+}
 </script>
 
 <template>
@@ -149,7 +206,7 @@ const handleAddDialogClose = () => {
             type="primary"
             size="small"
             plain
-            @click="onlineNotice(row.id)"
+            @click="updateNotice(row.id)"
           >编辑</el-button>
           <el-button
             round
@@ -207,6 +264,34 @@ const handleAddDialogClose = () => {
             <div class="long-text">{{ noticeDetail.content }}</div>
           </el-descriptions-item>
         </el-descriptions>
+      </template>
+    </el-dialog>
+    <!-- 编辑公告弹窗 -->
+    <el-dialog
+      v-model="editDialogVisible"
+      title="编辑公告"
+      width="40%"
+      :before-close="handleEditDialogClose"
+    >
+      <template #default>
+        <el-form :model="editForm" label-width="100px" size="large" class="job-form">
+          <el-form-item label="公告标题">
+            <el-input v-model="editForm.title" placeholder="请输入公告标题" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="公告内容">
+            <el-input
+              v-model="editForm.content"
+              type="textarea"
+              placeholder="请输入公告内容"
+              clearable
+              class="textarea-input"
+            ></el-input>
+          </el-form-item>
+          <div class="dialog-footer">
+            <el-button @click="handleEditDialogClose">取消</el-button>
+            <el-button type="primary" @click="handleEditSubmit">提交</el-button>
+          </div>
+        </el-form>
       </template>
     </el-dialog>
     <el-pagination

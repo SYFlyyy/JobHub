@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
-import { getJobListService, addJobService, onlineJobService, offlineJobService } from '@/api/job'
+import { getJobListService, addJobService, onlineJobService, offlineJobService, updateJobService } from '@/api/job'
 
 const jobList = ref([])
 const loading = ref(false)
@@ -160,6 +160,68 @@ const handleAddDialogClose = () => {
   }
   addDialogVisible.value = false
 }
+
+const editDialogVisible = ref(false)
+const editJobForm = ref({
+  id: '',
+  name: '',
+  type: '',
+  salary: '',
+  intro: ''
+})
+
+// 获取职位详情用于编辑
+const getJobByIdForEdit = async (id) => {
+  params.value.id = id
+  const res = await getJobListService(params.value)
+  console.log(res)
+  const data = res.data.data.records[0]
+  // 转换类型为字符串匹配select的value
+  editJobForm.value = {
+    id: data.id,
+    name: data.name,
+    type: jobTypeStatus(data.type),
+    salary: data.salary,
+    intro: data.intro
+  }
+  editDialogVisible.value = true
+  params.value.id = ''
+}
+
+// 更新职位方法
+const updateJob = (id) => {
+  getJobByIdForEdit(id)
+}
+
+// 提交编辑
+const handleEditJob = async () => {
+  await ElMessageBox.confirm('确认修改职位信息吗？', '温馨提示', {
+    type: 'warning',
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+  })
+
+  try {
+    await updateJobService(editJobForm.value)
+    ElMessage.success('修改成功')
+    editDialogVisible.value = false
+    getJobList()
+  } catch (error) {
+    ElMessage.error('修改失败')
+  }
+}
+
+// 关闭编辑弹窗
+const handleEditDialogClose = () => {
+  editJobForm.value = {
+    id: '',
+    name: '',
+    type: '',
+    salary: '',
+    intro: ''
+  }
+  editDialogVisible.value = false
+}
 </script>
 
 <template>
@@ -191,7 +253,7 @@ const handleAddDialogClose = () => {
             type="primary"
             size="small"
             plain
-            @click="onlineJob(row.id)"
+            @click="updateJob(row.id)"
           >编辑</el-button>
           <el-button
             round
@@ -268,6 +330,49 @@ const handleAddDialogClose = () => {
         </el-descriptions>
       </template>
     </el-dialog>
+    <!-- 编辑职位弹窗 -->
+    <el-dialog
+    v-model="editDialogVisible"
+    title="编辑职位"
+    width="40%"
+    :before-close="handleEditDialogClose"
+  >
+    <template #default>
+      <el-form :model="editJobForm" label-width="100px" size="large" class="job-form">
+        <el-form-item label="职位名称">
+          <el-input v-model="editJobForm.name" placeholder="请输入职位名称" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="职位详情">
+          <el-input
+            v-model="editJobForm.intro"
+            type="textarea"
+            placeholder="请输入职位详情"
+            clearable
+            class="textarea-input"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="职位薪资">
+          <el-input v-model="editJobForm.salary" placeholder="请输入职位薪资" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="职位类型">
+          <el-select
+            v-model="editJobForm.type"
+            placeholder="请选择职位类型"
+            style="width: 600px"
+            clearable
+          >
+            <el-option label="全职" value="0"></el-option>
+            <el-option label="实习" value="1"></el-option>
+            <el-option label="兼职" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <div class="dialog-footer">
+          <el-button @click="handleEditDialogClose">取消</el-button>
+          <el-button type="primary" @click="handleEditJob">提交</el-button>
+        </div>
+      </el-form>
+    </template>
+  </el-dialog>
     <el-pagination
       v-model:current-page="params.current"
       v-model:page-size="params.pageSize"

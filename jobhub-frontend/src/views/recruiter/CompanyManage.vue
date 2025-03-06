@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
-import { getCompanyInfoService, registerCompanyService, uploadLogoService } from '@/api/company'
+import { getCompanyInfoService, registerCompanyService, uploadLogoService, updateCompanyInfoService } from '@/api/company'
 import { Upload, Plus } from '@element-plus/icons-vue'
 import { pcaTextArr } from "element-china-area-data";
 import avatar from '@/assets/default.png'
@@ -109,7 +109,6 @@ const formattedAddress = () => {
 }
 
 const registerDialogVisible = ref(false)
-const refisterFomRef = ref(null)
 const registerForm = ref({
   name: '',
   intro: '',
@@ -156,6 +155,70 @@ const handleRegister = async () => {
     ElMessage.error('注册失败')
   }
 }
+
+const editDialogVisible = ref(false)
+const editForm = ref({
+  id: '',
+  name: '',
+  intro: '',
+  address: '',
+  type: '',
+  size: ''
+})
+
+// 打开编辑弹窗
+const openEditDialog = () => {
+  if (!companyInfo.value.id) {
+    ElMessage.warning('请先完成企业注册')
+    return
+  }
+
+  // 填充表单数据
+  editForm.value = { ...companyInfo.value }
+
+  editDialogVisible.value = true
+}
+
+// 提交编辑
+const handleEditSubmit = async () => {
+  try {
+    await ElMessageBox.confirm('确认修改企业信息吗？', '温馨提示', {
+      type: 'warning',
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+    })
+
+    // 处理地址转换
+    editForm.value.address = formattedAddress()
+
+    // 调用更新接口
+    await updateCompanyInfoService(editForm.value)
+
+    // 刷新数据
+    await getCompanyInfo()
+    ElMessage.success('修改成功，等待管理员审核')
+    editDialogVisible.value = false
+    addressObj.value = []
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('修改失败')
+    }
+  }
+}
+
+// 关闭编辑弹窗
+const handleEditDialogClose = () => {
+  editForm.value = {
+    id: '',
+    name: '',
+    intro: '',
+    address: '',
+    type: '',
+    size: ''
+  }
+  addressObj.value = []
+  editDialogVisible.value = false
+}
 </script>
 
 <template>
@@ -169,7 +232,7 @@ const handleRegister = async () => {
           <template #header>
             <div class="card-header">
               <el-button type="primary" @click="register">注册企业</el-button>
-              <el-button type="info">编辑企业信息</el-button>
+              <el-button type="info" @click="openEditDialog">编辑企业信息</el-button>
               <el-button type="success">绑定企业</el-button>
             </div>
           </template>
@@ -192,9 +255,12 @@ const handleRegister = async () => {
           </el-form>
         </el-card>
       </el-col>
+      <!-- 注册弹窗 -->
       <el-dialog
         v-model="registerDialogVisible"
         :before-close="handleRegisterDialogClose"
+        width="40%"
+        title="注册企业"
       >
         <template #default>
           <el-form :model="registerForm" label-width="120px" size="large" class="companyInfo-form">
@@ -234,6 +300,60 @@ const handleRegister = async () => {
             <div class="dialog-footer">
               <el-button @click="handleRegisterDialogClose">取消</el-button>
               <el-button type="primary" @click="handleRegister">注册</el-button>
+            </div>
+          </el-form>
+        </template>
+      </el-dialog>
+      <!-- 编辑企业信息弹窗 -->
+      <el-dialog
+        v-model="editDialogVisible"
+        title="编辑企业信息"
+        width="40%"
+        :before-close="handleEditDialogClose"
+      >
+        <template #default>
+          <el-form :model="editForm" label-width="120px" size="large" class="companyInfo-form">
+            <el-form-item label="企业名称">
+              <el-input v-model="editForm.name" placeholder="请输入企业名称" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="企业介绍">
+              <el-input
+                v-model="editForm.intro"
+                type="textarea"
+                placeholder="请输入企业介绍"
+                clearable
+                class="textarea-input"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="企业地址">
+              <el-cascader
+                placeholder="请选择地区"
+                :options="pcaTextArr"
+                v-model="addressObj"
+                style="width: 600px"
+              ></el-cascader>
+            </el-form-item>
+            <el-form-item label="企业类型">
+              <el-input v-model="editForm.type" placeholder="请输入企业类型" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="企业规模">
+              <el-select
+                v-model="editForm.size"
+                placeholder="请选择企业规模"
+                style="width: 600px"
+                clearable
+              >
+                <el-option label="0-20人" value="0-20人"></el-option>
+                <el-option label="21-99人" value="21-99人"></el-option>
+                <el-option label="100-499人" value="100-499人"></el-option>
+                <el-option label="500-999人" value="500-999人"></el-option>
+                <el-option label="1000-9999人" value="1000-9999人"></el-option>
+                <el-option label="10000人以上" value="10000人以上"></el-option>
+              </el-select>
+            </el-form-item>
+            <div class="dialog-footer">
+              <el-button @click="handleEditDialogClose">取消</el-button>
+              <el-button type="primary" @click="handleEditSubmit">提交</el-button>
             </div>
           </el-form>
         </template>
@@ -296,8 +416,7 @@ const handleRegister = async () => {
 
 .companyInfo-form {
   width: 100%;
-  max-width: 710px;
-  padding-right: 30px;
+  max-width: 550px;
 }
 
 .avatar-container {

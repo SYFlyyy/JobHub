@@ -308,6 +308,10 @@ const deliver = async (id) => {
   width: 395px;
 }
 
+.card-item:hover {
+  background-color: #F2F6FC !important; /* 加深背景色 */
+}
+
 .card-header {
   display: flex; /* 使用 Flexbox 布局 */
   justify-content: space-between; /* 让子元素在主轴上两端对齐 */
