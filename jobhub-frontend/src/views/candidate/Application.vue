@@ -22,6 +22,8 @@ const applicationInfo = ref({
   workExperience: ''
 })
 
+const applicationForm = ref(null)
+
 const isEditing = ref(false)
 
 const rules = {
@@ -41,7 +43,7 @@ const formatDate = (date) => {
 
 const getApplicationInfo = async () => {
   const res = await getOwnApplicationInfoService()
-  if (res.data) {
+  if (res.data.data) {
     applicationInfo.value = res.data.data
   }
 }
@@ -52,8 +54,7 @@ const submitApplicationInfo = async () => {
   const valid = await applicationForm.value.validate()
   if (!valid) return
   const res = await hasApplicationInfoService()
-  console.log(res.data.data)
-  if (!res.data.data) {
+  if (res.data.data) {
     await updateApplicationInfoService(applicationInfo.value)
   } else {
     await addApplicationInfoService(applicationInfo.value)
@@ -64,7 +65,6 @@ const submitApplicationInfo = async () => {
   isEditing.value = false
 }
 
-const applicationForm = ref(null)
 </script>
 
 <template>
