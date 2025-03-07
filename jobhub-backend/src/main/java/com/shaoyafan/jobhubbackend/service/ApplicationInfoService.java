@@ -46,8 +46,8 @@ public interface ApplicationInfoService extends IService<ApplicationInfo> {
     /**
      * 根据 userId 查看在线简历
      *
-     * @param userIdRequest
+     * @param userId
      * @return
      */
-    ApplicationInfo getApplicationInfoByUserId(UserIdRequest userIdRequest);
+    ApplicationInfo getApplicationInfoByUserId(Long userId);
 }

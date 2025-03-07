@@ -9,6 +9,7 @@ import com.shaoyafan.jobhubbackend.model.dto.applicationInfo.ApplicationInfoAddR
 import com.shaoyafan.jobhubbackend.model.dto.applicationInfo.ApplicationInfoUpdateRequest;
 import com.shaoyafan.jobhubbackend.model.dto.user.UserIdRequest;
 import com.shaoyafan.jobhubbackend.service.ApplicationInfoService;
+import com.shaoyafan.jobhubbackend.service.UserService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,6 +32,9 @@ public class ApplicationInfoController {
 
     @Resource
     private ApplicationInfoService applicationInfoService;
+
+    @Resource
+    private UserService userService;
 
     /**
      * 新增在线简历
@@ -95,7 +99,8 @@ public class ApplicationInfoController {
         if (userIdRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        ApplicationInfo result = applicationInfoService.getApplicationInfoByUserId(userIdRequest);
+        Long userId = userIdRequest.getId();
+        ApplicationInfo result = applicationInfoService.getApplicationInfoByUserId(userId);
         return ResultUtils.success(result);
     }
 
@@ -109,8 +114,8 @@ public class ApplicationInfoController {
     @AuthCheck(mustRole = 1)
     @ApiOperation("查询用户是否有在线简历")
     public BaseResponse<Boolean> hasApplicationInfo(HttpServletRequest request) {
-        Long userId = (Long) request.getAttribute("userId");
-        ApplicationInfo applicationInfo = applicationInfoService.getById(userId);
+        Long userId = userService.getLoginUser(request).getId();
+        ApplicationInfo applicationInfo = applicationInfoService.getApplicationInfoByUserId(userId);
         return ResultUtils.success(applicationInfo != null);
     }
 }

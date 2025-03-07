@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -45,7 +46,10 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
 
     @Override
     @Transactional
-    public Boolean uploadResume(MultipartFile file, HttpServletRequest request) {
+    public Boolean uploadResume(MultipartFile file, Integer slot, HttpServletRequest request) {
+        if (slot == null || slot < 1 || slot > 3) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "slot 参数错误");
+        }
         Long userId = userService.getLoginUser(request).getId();
         try {
             // 检查文件是否为空
@@ -65,9 +69,9 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
-            String fileName = userId + "_" + file.getOriginalFilename();
+            String fileName = userId + "_" + slot + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(RESUME_FILE_PATH + fileName);
-            Resume existResume = this.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
+            Resume existResume = this.getOne(new QueryWrapper<Resume>().eq("user_id", userId).eq("slot", slot));
             // 用户是否已有简历附件
             if (existResume == null) {
                 // 用户首次上传简历附件
@@ -75,7 +79,8 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
                 // 保存文件信息到数据库
                 Resume resume = new Resume();
                 resume.setUserId(userId);
-                resume.setFileName(fileName);
+                resume.setFileName(file.getOriginalFilename());
+                resume.setSlot(slot);
                 resume.setFilePath(filePath.toString());
                 resume.setFileType(contentType);
                 // 默认为正常状态
@@ -96,7 +101,8 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
                     }
                 }
                 Files.copy(file.getInputStream(), filePath);
-                existResume.setFileName(fileName);
+                existResume.setFileName(file.getOriginalFilename());
+                existResume.setSlot(slot);
                 existResume.setFilePath(filePath.toString());
                 existResume.setFileType(contentType);
                 // 设置为正常状态
@@ -173,16 +179,13 @@ public class ResumeServiceImpl extends ServiceImpl<ResumeMapper, Resume>
     }
 
     @Override
-    public String getUserResumePath(HttpServletRequest request) {
+    public List<Resume> getUserResumePath(HttpServletRequest request) {
         Long userId = userService.getLoginUser(request).getId();
-        Resume resume = this.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
-        if (resume == null) {
+        List<Resume> resumeList = this.list(new QueryWrapper<Resume>().eq("user_id", userId));
+        if (resumeList == null || resumeList.isEmpty()) {
             return null;
         }
-        if (Objects.equals(resume.getStatus(), StatusConstant.DISABLED)) {
-            throw new BusinessException(ErrorCode.STATE_ERROR, "用户已删除简历附件");
-        }
-        return resume.getFilePath();
+        return resumeList;
     }
 
     @Override

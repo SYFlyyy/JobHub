@@ -113,8 +113,7 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
     }
 
     @Override
-    public ApplicationInfo getApplicationInfoByUserId(UserIdRequest userIdRequest) {
-        Long userId = userIdRequest.getId();
+    public ApplicationInfo getApplicationInfoByUserId(Long userId) {
         if (userId == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }

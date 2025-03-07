@@ -41,6 +41,11 @@ public class Resume {
     private String fileType;
 
     /**
+     * 简历槽位（1-3）
+     */
+    private Integer slot;
+
+    /**
      * 文件状态（0-正常、1-删除）
      */
     private Integer status;

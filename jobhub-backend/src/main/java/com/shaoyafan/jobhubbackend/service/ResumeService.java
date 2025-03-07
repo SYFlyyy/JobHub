@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 简历附件服务
@@ -26,7 +27,7 @@ public interface ResumeService extends IService<Resume> {
      * @param request
      * @return
      */
-    Boolean uploadResume(MultipartFile file, HttpServletRequest request);
+    Boolean uploadResume(MultipartFile file, Integer slot, HttpServletRequest request);
 
     /**
      * 下载求职者简历附件
@@ -50,7 +51,7 @@ public interface ResumeService extends IService<Resume> {
      * @param request
      * @return
      */
-    String getUserResumePath(HttpServletRequest request);
+    List<Resume> getUserResumePath(HttpServletRequest request);
 
     /**
      * 招聘者获取简历附件路径
