@@ -66,7 +66,6 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         if (Objects.equals(company.getStatus(), StatusConstant.PENDING)) {
             throw new BusinessException(ErrorCode.STATE_ERROR, "企业待审核中");
         }
-        // String companyName = company.getName();
         String name = jobAddRequest.getName();
         if (StringUtils.isBlank(name)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "职位名称不能为空");
@@ -79,15 +78,53 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         if (StringUtils.isBlank(intro)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "职位详情不能为空");
         }
-        String salary = jobAddRequest.getSalary();
-        if (StringUtils.isBlank(salary)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR, "薪资不能为空");
+        Integer minSalary = jobAddRequest.getMinSalary();
+        if (minSalary == null || minSalary <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最低薪资不能为空");
+        }
+        Integer maxSalary = jobAddRequest.getMaxSalary();
+        if (maxSalary == null || maxSalary <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最高薪资不能为空");
+        }
+        if (minSalary > maxSalary) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最低薪资不能大于最高薪资");
+        }
+        Integer salaryUnit = jobAddRequest.getSalaryUnit();
+        if (salaryUnit == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "薪资单位不能为空");
+        }
+        Integer periodUnit = jobAddRequest.getPeriodUnit();
+        if (periodUnit == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "结算周期单位不能为空");
+        }
+        String unit = switch (salaryUnit) {
+            case 0 -> "元";
+            case 1 -> "k";
+            case 2 -> "w";
+            default -> "";
+        };
+        String period = switch (periodUnit) {
+            case 0 -> "天";
+            case 1 -> "月";
+            case 2 -> "年";
+            default -> "";
+        };
+        String salary;
+        if (minSalary.equals(maxSalary)) {
+            // 薪资相同
+            salary = minSalary + unit + "/" + period;
+        } else {
+            // 薪资不同
+            salary = minSalary + "-" + maxSalary + unit + "/" + period;
         }
         Job job = new Job();
         job.setCompanyId(companyId);
-        // job.setCompanyName(companyName);
         job.setName(name);
         job.setType(type);
+        job.setMinSalary(minSalary);
+        job.setMaxSalary(maxSalary);
+        job.setSalaryUnit(salaryUnit);
+        job.setPeriodUnit(periodUnit);
         job.setSalary(salary);
         job.setIntro(intro);
         // 默认为待审核状态
@@ -128,11 +165,53 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job>
         if (StringUtils.isBlank(intro)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "职位详情不能为空");
         }
-        String salary = jobUpdateRequest.getSalary();
+        Integer minSalary = jobUpdateRequest.getMinSalary();
+        if (minSalary == null || minSalary <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最低薪资不能为空");
+        }
+        Integer maxSalary = jobUpdateRequest.getMaxSalary();
+        if (maxSalary == null || maxSalary <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最高薪资不能为空");
+        }
+        if (minSalary > maxSalary) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "最低薪资不能大于最高薪资");
+        }
+        Integer salaryUnit = jobUpdateRequest.getSalaryUnit();
+        if (salaryUnit == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "薪资单位不能为空");
+        }
+        Integer periodUnit = jobUpdateRequest.getPeriodUnit();
+        if (periodUnit == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "结算周期单位不能为空");
+        }
+        String unit = switch (salaryUnit) {
+            case 0 -> "元";
+            case 1 -> "k";
+            case 2 -> "w";
+            default -> "";
+        };
+        String period = switch (periodUnit) {
+            case 0 -> "天";
+            case 1 -> "月";
+            case 2 -> "年";
+            default -> "";
+        };
+        String salary;
+        if (minSalary.equals(maxSalary)) {
+            // 薪资相同
+            salary = minSalary + unit + "/" + period;
+        } else {
+            // 薪资不同
+            salary = minSalary + "-" + maxSalary + unit + "/" + period;
+        }
         job.setName(name);
         job.setType(type);
-        job.setIntro(intro);
+        job.setMinSalary(minSalary);
+        job.setMaxSalary(maxSalary);
+        job.setSalaryUnit(salaryUnit);
+        job.setPeriodUnit(periodUnit);
         job.setSalary(salary);
+        job.setIntro(intro);
         // 更新后状态变为待审核
         job.setStatus(StatusConstant.PENDING);
         boolean result = this.updateById(job);

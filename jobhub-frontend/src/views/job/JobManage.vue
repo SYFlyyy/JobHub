@@ -122,30 +122,63 @@ const handleCurrentChange = (page) => {
 const addJobForm = ref({
   name: '',
   type: '',
-  salary: '',
+  minSalary: null,
+  maxSalary: null,
+  salaryUnit: null,
+  periodUnit: null,
   intro: ''
 })
+
+const salaryUnitOptions = [
+  { label: '元', value: 0 },
+  { label: '千元/k', value: 1 },
+  { label: '万元/w', value: 2 }
+]
+
+const periodUnitOptions = [
+  { label: '天', value: 0 },
+  { label: '月', value: 1 },
+  { label: '年', value: 2 }
+]
 
 const addDialogVisible = ref(false)
 const addJob = () => {
   addDialogVisible.value = true
 }
 const handleAddJob = async () => {
+  // 表单验证
+  if (!addJobForm.value.minSalary ||
+      addJobForm.value.minSalary < 0) {
+    return ElMessage.warning('请输入有效的薪资下限')
+  }
+
+  if (addJobForm.value.maxSalary &&
+      addJobForm.value.maxSalary < addJobForm.value.minSalary) {
+    return ElMessage.warning('薪资上限不能低于下限')
+  }
+
+  if (addJobForm.value.salaryUnit === undefined) {
+    return ElMessage.warning('请选择薪资单位')
+  }
+
+  if (addJobForm.value.periodUnit === undefined) {
+    return ElMessage.warning('请选择结算周期')
+  }
+
   await ElMessageBox.confirm('确认新增职位吗？', '温馨提示', {
     type: 'warning',
     confirmButtonText: '确认',
     cancelButtonText: '取消',
   })
-  const res = await addJobService(addJobForm.value)
+  const res = await addJobService({
+    ...addJobForm.value,
+    // 确保数值类型正确
+    minSalary: Number(addJobForm.value.minSalary),
+    maxSalary: Number(addJobForm.value.maxSalary) || null
+  })
   if (res.data.data) {
     ElMessage.success('新增成功')
     addDialogVisible.value = false
-    addJobForm.value = {
-      name: '',
-      type: '',
-      salary: '',
-      intro: ''
-    }
     getJobList()
   } else {
     ElMessage.error('新增失败')
@@ -166,7 +199,10 @@ const editJobForm = ref({
   id: '',
   name: '',
   type: '',
-  salary: '',
+  minSalary: null,
+  maxSalary: null,
+  salaryUnit: null,
+  periodUnit: null,
   intro: ''
 })
 
@@ -174,14 +210,17 @@ const editJobForm = ref({
 const getJobByIdForEdit = async (id) => {
   params.value.id = id
   const res = await getJobListService(params.value)
-  console.log(res)
   const data = res.data.data.records[0]
-  // 转换类型为字符串匹配select的value
+
+  // 转换数据格式
   editJobForm.value = {
     id: data.id,
     name: data.name,
-    type: jobTypeStatus(data.type),
-    salary: data.salary,
+    type: data.type.toString(),
+    minSalary: data.minSalary,
+    maxSalary: data.maxSalary,
+    salaryUnit: data.salaryUnit,
+    periodUnit: data.periodUnit,
     intro: data.intro
   }
   editDialogVisible.value = true
@@ -195,18 +234,40 @@ const updateJob = (id) => {
 
 // 提交编辑
 const handleEditJob = async () => {
+  if (!editJobForm.value.minSalary ||
+      editJobForm.value.minSalary < 0) {
+    return ElMessage.warning('请输入有效的薪资下限')
+  }
+
+  if (editJobForm.value.maxSalary &&
+      editJobForm.value.maxSalary < editJobForm.value.minSalary) {
+    return ElMessage.warning('薪资上限不能低于下限')
+  }
+
+  if (editJobForm.value.salaryUnit === undefined) {
+    return ElMessage.warning('请选择薪资单位')
+  }
+
+  if (editJobForm.value.periodUnit === undefined) {
+    return ElMessage.warning('请选择结算周期')
+  }
+
   await ElMessageBox.confirm('确认修改职位信息吗？', '温馨提示', {
     type: 'warning',
     confirmButtonText: '确认',
     cancelButtonText: '取消',
   })
 
-  try {
-    await updateJobService(editJobForm.value)
+  const res = await updateJobService({
+    ...editJobForm.value,
+    minSalary: Number(editJobForm.value.minSalary),
+    maxSalary: Number(editJobForm.value.maxSalary) || null
+  })
+  if (res.data.data) {
     ElMessage.success('修改成功')
     editDialogVisible.value = false
     getJobList()
-  } catch (error) {
+  } else {
     ElMessage.error('修改失败')
   }
 }
@@ -217,7 +278,10 @@ const handleEditDialogClose = () => {
     id: '',
     name: '',
     type: '',
-    salary: '',
+    minSalary: null,
+    maxSalary: null,
+    salaryUnit: null,
+    periodUnit: null,
     intro: ''
   }
   editDialogVisible.value = false
@@ -276,19 +340,58 @@ const handleEditDialogClose = () => {
     <el-dialog
       v-model="addDialogVisible"
       title="新增职位"
-      width="40%"
+      width="50%"
       :before-close="handleAddDialogClose"
     >
       <template #default>
-        <el-form :model="addJobForm" label-width="100px" size="large" class="job-form">
+        <el-form :model="addJobForm" label-width="150px" size="large" class="job-form">
           <el-form-item label="职位名称">
             <el-input v-model="addJobForm.name" placeholder="请输入职位名称" clearable></el-input>
           </el-form-item>
           <el-form-item label="职位详情">
             <el-input v-model="addJobForm.intro" type="textarea" placeholder="请输入职位详情" clearable class="textarea-input"></el-input>
           </el-form-item>
-          <el-form-item label="职位薪资">
-            <el-input v-model="addJobForm.salary" placeholder="请输入职位薪资" clearable></el-input>
+          <el-form-item label="薪资范围">
+            <div class="salary-input-group">
+              <el-input-number
+                v-model="addJobForm.minSalary"
+                :min="0"
+                placeholder="最低薪资"
+                style="width: 150px;"
+              />
+              <span class="separator">-</span>
+              <el-input-number
+                v-model="addJobForm.maxSalary"
+                :min="addJobForm.minSalary || 0"
+                placeholder="最高薪资"
+                style="width: 150px;"
+              />
+              <el-select
+                v-model="addJobForm.salaryUnit"
+                placeholder="单位"
+                style="width: 100px; margin-left: 10px;"
+              >
+                <el-option
+                  v-for="unit in salaryUnitOptions"
+                  :key="unit.value"
+                  :label="unit.label"
+                  :value="unit.value"
+                />
+              </el-select>
+              <span class="separator">/</span>
+              <el-select
+                v-model="addJobForm.periodUnit"
+                placeholder="周期"
+                style="width: 90px;"
+              >
+                <el-option
+                  v-for="period in periodUnitOptions"
+                  :key="period.value"
+                  :label="period.label"
+                  :value="period.value"
+                />
+              </el-select>
+            </div>
           </el-form-item>
           <el-form-item label="职位类型">
             <el-select
@@ -332,47 +435,86 @@ const handleEditDialogClose = () => {
     </el-dialog>
     <!-- 编辑职位弹窗 -->
     <el-dialog
-    v-model="editDialogVisible"
-    title="编辑职位"
-    width="40%"
-    :before-close="handleEditDialogClose"
-  >
-    <template #default>
-      <el-form :model="editJobForm" label-width="100px" size="large" class="job-form">
-        <el-form-item label="职位名称">
-          <el-input v-model="editJobForm.name" placeholder="请输入职位名称" clearable></el-input>
-        </el-form-item>
-        <el-form-item label="职位详情">
-          <el-input
-            v-model="editJobForm.intro"
-            type="textarea"
-            placeholder="请输入职位详情"
-            clearable
-            class="textarea-input"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="职位薪资">
-          <el-input v-model="editJobForm.salary" placeholder="请输入职位薪资" clearable></el-input>
-        </el-form-item>
-        <el-form-item label="职位类型">
-          <el-select
-            v-model="editJobForm.type"
-            placeholder="请选择职位类型"
-            style="width: 600px"
-            clearable
-          >
-            <el-option label="全职" value="0"></el-option>
-            <el-option label="实习" value="1"></el-option>
-            <el-option label="兼职" value="2"></el-option>
-          </el-select>
-        </el-form-item>
-        <div class="dialog-footer">
-          <el-button @click="handleEditDialogClose">取消</el-button>
-          <el-button type="primary" @click="handleEditJob">提交</el-button>
-        </div>
-      </el-form>
-    </template>
-  </el-dialog>
+      v-model="editDialogVisible"
+      title="编辑职位"
+      width="50%"
+      :before-close="handleEditDialogClose"
+    >
+      <template #default>
+        <el-form :model="editJobForm" label-width="150px" size="large" class="job-form">
+          <el-form-item label="职位名称">
+            <el-input v-model="editJobForm.name" placeholder="请输入职位名称" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="职位详情">
+            <el-input
+              v-model="editJobForm.intro"
+              type="textarea"
+              placeholder="请输入职位详情"
+              clearable
+              class="textarea-input"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="薪资范围">
+            <div class="salary-input-group">
+              <el-input-number
+                v-model="editJobForm.minSalary"
+                :min="0"
+                placeholder="最低薪资"
+                style="width: 150px;"
+              />
+              <span class="separator">-</span>
+              <el-input-number
+                v-model="editJobForm.maxSalary"
+                :min="editJobForm.minSalary || 0"
+                placeholder="最高薪资"
+                style="width: 150px;"
+              />
+              <el-select
+                v-model="editJobForm.salaryUnit"
+                placeholder="单位"
+                style="width: 100px; margin-left: 10px;"
+              >
+                <el-option
+                  v-for="unit in salaryUnitOptions"
+                  :key="unit.value"
+                  :label="unit.label"
+                  :value="unit.value"
+                />
+              </el-select>
+              <span class="separator">/</span>
+              <el-select
+                v-model="editJobForm.periodUnit"
+                placeholder="周期"
+                style="width: 90px;"
+              >
+                <el-option
+                  v-for="period in periodUnitOptions"
+                  :key="period.value"
+                  :label="period.label"
+                  :value="period.value"
+                />
+              </el-select>
+            </div>
+          </el-form-item>
+          <el-form-item label="职位类型">
+            <el-select
+              v-model="editJobForm.type"
+              placeholder="请选择职位类型"
+              style="width: 600px"
+              clearable
+            >
+              <el-option label="全职" value="0"></el-option>
+              <el-option label="实习" value="1"></el-option>
+              <el-option label="兼职" value="2"></el-option>
+            </el-select>
+          </el-form-item>
+          <div class="dialog-footer">
+            <el-button @click="handleEditDialogClose">取消</el-button>
+            <el-button type="primary" @click="handleEditJob">提交</el-button>
+          </div>
+        </el-form>
+      </template>
+    </el-dialog>
     <el-pagination
       v-model:current-page="params.current"
       v-model:page-size="params.pageSize"
@@ -396,7 +538,7 @@ const handleEditDialogClose = () => {
 
 .job-form {
   width: 100%;
-  max-width: 580px;
+  max-width: 692px;
 }
 
 .textarea-input {
@@ -415,5 +557,15 @@ const handleEditDialogClose = () => {
   display: flex;
   justify-content: center; /* 水平居中 */
   margin-top: 20px; /* 可以根据需要调整顶部间距 */
+}
+
+.salary-input-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.separator {
+  color: #666;
+  padding: 0 4px;
 }
 </style>

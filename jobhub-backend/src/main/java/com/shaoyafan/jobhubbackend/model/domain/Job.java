@@ -38,6 +38,26 @@ public class Job implements Serializable {
     private Integer type;
 
     /**
+     * 薪资范围下限
+     */
+    private Integer minSalary;
+
+    /**
+     * 薪资范围上限
+     */
+    private Integer maxSalary;
+
+    /**
+     * 薪资单位（0-元、1-千元/k、2-万元/w）
+     */
+    private Integer salaryUnit;
+
+    /**
+     * 结算周期单位（0-小时、1-天、2-月、3-年）
+     */
+    private Integer periodUnit;
+
+    /**
      * 薪资
      */
     private String salary;
