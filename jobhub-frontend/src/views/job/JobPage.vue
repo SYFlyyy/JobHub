@@ -5,6 +5,8 @@ import { getJobWithCompanyService, jobCollectService, getJobDetailByIdService } 
 import { getCompanyListService } from '@/api/company'
 import { pcaTextArr } from "element-china-area-data";
 import { addResumeRecordServcie } from '@/api/resumeRecord';
+import { getUserResumePathService } from '@/api/resume';
+import { hasApplicationInfoService } from '@/api/applicationInfo'
 
 const jobList = ref([])
 const loading = ref(false)
@@ -96,19 +98,6 @@ const handleCompanyDialogClose = () => {
 // 初始加载职位数据
 getJobList()
 
-const typeStatus = (type) => {
-  switch (type) {
-    case 0:
-      return '全职'
-    case 1:
-      return '实习'
-    case 2:
-      return '兼职'
-    default:
-      return '未知'   // 如果是其他数字，显示 '未知'
-  }
-}
-
 const jobTypeStatus = (type) => {
   switch (type) {
     case 0:
@@ -159,16 +148,46 @@ const jobCollect = async (id) => {
   getJobList()
 }
 
-const deliverForm = ref({})
-const deliver = async (id) => {
+const deliverDialogVisible = ref(false)
+const resumes = ref([])
+const selectedJobId = ref('')
+const selectedSlot = ref('')
+
+const openDeliverDialog = async (jobId) => {
+  selectedJobId.value = jobId
+  const has = await hasApplicationInfoService()
+  if (!has.data.data) {
+    ElMessage.warning('请先完善个人在线简历')
+    return
+  }
+  const res = await getUserResumePathService()
+  if (!res.data.data) {
+    ElMessage.warning('请先上传至少一份简历附件')
+    return
+  }
+  resumes.value = res.data.data
+  deliverDialogVisible.value = true
+}
+
+const submitDeliver = async () => {
+  if (!selectedSlot.value) {
+    ElMessage.warning('请选择要投递的简历')
+    return
+  }
   await ElMessageBox.confirm('确认投递该职位吗？', '温馨提示', {
     type: 'warning',
     confirmButtonText: '确认',
     cancelButtonText: '取消',
   })
-  deliverForm.value.id = id
-  await addResumeRecordServcie(deliverForm.value)
+
+  await addResumeRecordServcie({
+    jobId: selectedJobId.value,
+    slot: selectedSlot.value
+  })
   ElMessage.success('投递成功')
+  deliverDialogVisible.value = false
+  selectedSlot.value = ''
+  selectedJobId.value = ''
 }
 </script>
 
@@ -248,8 +267,29 @@ const deliver = async (id) => {
         </el-descriptions>
         <div class="dialog-footer">
           <el-button type="primary" plain @click="jobCollect(jobDetail.id)">收藏</el-button>
-          <el-button type="success" plain @click="deliver(jobDetail.id)">投递</el-button>
+          <el-button type="success" plain @click="openDeliverDialog(jobDetail.id)">投递</el-button>
         </div>
+      </template>
+    </el-dialog>
+    <el-dialog
+      v-model="deliverDialogVisible"
+      title="选择简历附件"
+      width="30%"
+      @closed="selectedSlot = ''"
+    >
+      <el-select v-model="selectedSlot" placeholder="请选择简历" style="width: 100%">
+        <el-option
+          v-for="resume in resumes"
+          :key="resume.slot"
+          :label="resume.fileName"
+          :value="resume.slot"
+        />
+      </el-select>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="deliverDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitDeliver">确定</el-button>
+        </span>
       </template>
     </el-dialog>
     <el-dialog

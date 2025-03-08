@@ -7,6 +7,7 @@ import com.shaoyafan.jobhubbackend.common.ErrorCode;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.ResumeRecord;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
+import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordAddRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
 import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
@@ -45,18 +46,18 @@ public class ResumeRecordController {
     /**
      * 新增投递记录
      *
-     * @param jobIdRequest
+     * @param resumeRecordAddRequest
      * @param request
      * @return
      */
     @PostMapping("/add")
     @AuthCheck(mustRole = 1)
     @ApiOperation("新增投递记录")
-    public BaseResponse<Boolean> addResumeRecord(@RequestBody JobIdRequest jobIdRequest, HttpServletRequest request) {
-        if (jobIdRequest == null) {
+    public BaseResponse<Boolean> addResumeRecord(@RequestBody ResumeRecordAddRequest resumeRecordAddRequest, HttpServletRequest request) {
+        if (resumeRecordAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Boolean result = resumeRecordService.addResumeRecord(jobIdRequest, request);
+        Boolean result = resumeRecordService.addResumeRecord(resumeRecordAddRequest, request);
         return ResultUtils.success(result);
     }
 

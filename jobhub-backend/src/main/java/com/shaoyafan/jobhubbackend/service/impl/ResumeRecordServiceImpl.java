@@ -11,6 +11,7 @@ import com.shaoyafan.jobhubbackend.constant.StatusConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
 import com.shaoyafan.jobhubbackend.model.domain.*;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
+import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordAddRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
 import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
@@ -55,10 +56,59 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
     @Resource
     private CompanyService companyService;
 
+
+
+    // @Override
+    // @Transactional
+    // public Boolean addResumeRecord(JobIdRequest jobIdRequest, HttpServletRequest request) {
+    //     Long jobId = jobIdRequest.getId();
+    //     Job job = jobService.getById(jobId);
+    //     if (job == null) {
+    //         throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+    //     }
+    //     if (Objects.equals(job.getStatus(), StatusConstant.DISABLED)) {
+    //         throw new BusinessException(ErrorCode.STATE_ERROR, "该职位已下线");
+    //     }
+    //     Long userId = userService.getLoginUser(request).getId();
+    //     ApplicationInfo applicationInfo = applicationInfoService.getOne(new QueryWrapper<ApplicationInfo>().eq("user_id", userId));
+    //     if (applicationInfo == null) {
+    //         throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先完善个人在线简历");
+    //     }
+    //     Resume resume = resumeService.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
+    //     if (resume == null) {
+    //         throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先上传个人简历附件");
+    //     }
+    //     // 判断是否已经投递过该职位
+    //     ResumeRecord existResumeRecord = this.getOne(new QueryWrapper<ResumeRecord>().eq("job_id", jobId).eq("user_id", userId));
+    //     if (existResumeRecord != null) {
+    //         throw new BusinessException(ErrorCode.OPERATION_ERROR, "已投递过该职位");
+    //     }
+    //     ResumeRecord resumeRecord = new ResumeRecord();
+    //     resumeRecord.setJobId(jobId);
+    //     resumeRecord.setUserId(userId);
+    //     resumeRecord.setResumeId(resume.getId());
+    //     // 默认状态为已投递
+    //     resumeRecord.setStatus(HiringStatusConstant.APPLIED);
+    //     boolean result = this.save(resumeRecord);
+    //     if (!result) {
+    //         throw new BusinessException(ErrorCode.OPERATION_ERROR);
+    //     }
+    //     // 招聘数据投递数+1
+    //     HiringData hiringData = hiringDataService.getOne(new QueryWrapper<HiringData>().eq("job_id", jobId));
+    //     if (hiringData == null) {
+    //         throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+    //     }
+    //     hiringData.setApplicationCount(hiringData.getApplicationCount() + 1);
+    //     boolean save = hiringDataService.updateById(hiringData);
+    //     if (!save) {
+    //         throw new BusinessException(ErrorCode.OPERATION_ERROR);
+    //     }
+    //     return true;
+    // }
+
     @Override
-    @Transactional
-    public Boolean addResumeRecord(JobIdRequest jobIdRequest, HttpServletRequest request) {
-        Long jobId = jobIdRequest.getId();
+    public Boolean addResumeRecord(ResumeRecordAddRequest resumeRecordAddRequest, HttpServletRequest request) {
+        Long jobId = resumeRecordAddRequest.getJobId();
         Job job = jobService.getById(jobId);
         if (job == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
@@ -71,14 +121,19 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         if (applicationInfo == null) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先完善个人在线简历");
         }
-        Resume resume = resumeService.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
-        if (resume == null) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先上传个人简历附件");
+        List<Resume> resumeList = resumeService.list(new QueryWrapper<Resume>().eq("user_id", userId));
+        if (resumeList == null || resumeList.isEmpty()) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先上传至少一份个人简历附件");
         }
         // 判断是否已经投递过该职位
         ResumeRecord existResumeRecord = this.getOne(new QueryWrapper<ResumeRecord>().eq("job_id", jobId).eq("user_id", userId));
         if (existResumeRecord != null) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "已投递过该职位");
+        }
+        Integer slot = resumeRecordAddRequest.getSlot();
+        Resume resume = resumeService.getOne(new QueryWrapper<Resume>().eq("user_id", userId).eq("slot", slot));
+        if (resume == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "简历附件不存在");
         }
         ResumeRecord resumeRecord = new ResumeRecord();
         resumeRecord.setJobId(jobId);

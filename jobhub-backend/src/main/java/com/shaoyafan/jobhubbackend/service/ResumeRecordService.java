@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shaoyafan.jobhubbackend.model.domain.ResumeRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.shaoyafan.jobhubbackend.model.dto.job.JobIdRequest;
+import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordAddRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordQueryRequest;
 import com.shaoyafan.jobhubbackend.model.dto.resumeRecord.ResumeRecordUpdateStatusRequest;
 import com.shaoyafan.jobhubbackend.model.vo.resumeRecord.ResumeRecordVO;
@@ -22,11 +23,11 @@ public interface ResumeRecordService extends IService<ResumeRecord> {
     /**
      * 新增投递记录
      *
-     * @param jobIdRequest
+     * @param resumeRecordAddRequest
      * @param request
      * @return
      */
-    Boolean addResumeRecord(JobIdRequest jobIdRequest, HttpServletRequest request);
+    Boolean addResumeRecord(ResumeRecordAddRequest resumeRecordAddRequest, HttpServletRequest request);
 
     /**
      * 更新招聘记录状态

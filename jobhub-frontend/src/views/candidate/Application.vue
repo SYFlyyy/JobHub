@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import dayjs from 'dayjs'
 import PageContainer from '@/views/layout/PageContainer.vue'
 import { addApplicationInfoService, updateApplicationInfoService, hasApplicationInfoService, getOwnApplicationInfoService } from '@/api/applicationInfo'
@@ -27,6 +27,9 @@ const applicationForm = ref(null)
 const isEditing = ref(false)
 
 const rules = {
+  name: [
+    { required: true, message: '请输入姓名', trigger: 'blur' }
+  ],
   phone: [
     { required: true, message: '请输入手机号码', trigger: 'blur' },
     { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确', trigger: 'blur' }
@@ -47,7 +50,9 @@ const getApplicationInfo = async () => {
     applicationInfo.value = res.data.data
   }
 }
-getApplicationInfo()
+onMounted(() => {
+  getApplicationInfo()
+})
 
 const userStore = useUserStore()
 const submitApplicationInfo = async () => {
@@ -75,7 +80,7 @@ const submitApplicationInfo = async () => {
     <el-row :gutter="30" class="form-container">
       <el-col :span="16">
         <el-form :model="applicationInfo" :rules="rules" ref="applicationForm" label-width="120px" size="large" class="applicationInfo-form">
-          <el-form-item label="姓名">
+          <el-form-item label="姓名" prop="name">
             <div v-if="!isEditing">{{ applicationInfo.name }}</div>
             <el-input v-else v-model="applicationInfo.name"></el-input>
           </el-form-item>

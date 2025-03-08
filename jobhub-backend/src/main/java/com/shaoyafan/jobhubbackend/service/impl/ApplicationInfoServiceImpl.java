@@ -118,9 +118,9 @@ public class ApplicationInfoServiceImpl extends ServiceImpl<ApplicationInfoMappe
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         ApplicationInfo applicationInfo = this.getOne(new QueryWrapper<ApplicationInfo>().eq("user_id", userId));
-        if (applicationInfo == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户暂无在线简历");
-        }
+        // if (applicationInfo == null) {
+        //     throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "用户暂无在线简历");
+        // }
         return applicationInfo;
     }
 }
