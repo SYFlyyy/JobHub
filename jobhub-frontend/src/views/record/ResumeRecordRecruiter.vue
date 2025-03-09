@@ -28,9 +28,9 @@ getResumeRecordList()
 const formatStatus = (row, column, cellValue) => {
   switch (cellValue) {
     case 0:
-      return '已投递'   // 对应数字 0 显示 '正常'
+      return '已投递'   // 对应数字 0 显示 '已投递'
     case 1:
-      return '面试中'   // 对应数字 1 显示 '禁用'
+      return '面试流程中'   // 对应数字 1 显示 '面试流程中'
     case 2:
       return '面试通过' // 对应数字 2 显示 '待审核'
     case 3:
@@ -212,8 +212,6 @@ const updateStatus = async () => {
         <el-form :model="statusForm" label-width="100px" size="large" class="status-form">
           <el-form-item label="招聘状态">
             <el-select v-model="statusForm.status" placeholder="请选择招聘状态" style="width: 500px" clearable>
-              <el-option label="已投递" value="0"></el-option>
-              <el-option label="面试中" value="1"></el-option>
               <el-option label="面试通过" value="2"></el-option>
               <el-option label="录用意向" value="3"></el-option>
               <el-option label="已录用" value="4"></el-option>

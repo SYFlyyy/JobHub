@@ -55,12 +55,12 @@ const handleDialogClose = () => {
 }
 
 const typeStatus = (row, column, cellValue) => {
-  // 0-已投递、1-面试中、2-面试通过、3-录用意向、4-已录用、5-流程结束
+  // 0-已投递、1-面试流程中、2-面试通过、3-录用意向、4-已录用、5-流程结束
   switch (cellValue) {
     case 0:
       return '已投递'
     case 1:
-      return '面试中'
+      return '面试流程中'
     case 2:
       return '面试通过'
     case 3:

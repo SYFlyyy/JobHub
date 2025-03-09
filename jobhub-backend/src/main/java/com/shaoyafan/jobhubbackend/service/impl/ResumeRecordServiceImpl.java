@@ -56,57 +56,8 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
     @Resource
     private CompanyService companyService;
 
-
-
-    // @Override
-    // @Transactional
-    // public Boolean addResumeRecord(JobIdRequest jobIdRequest, HttpServletRequest request) {
-    //     Long jobId = jobIdRequest.getId();
-    //     Job job = jobService.getById(jobId);
-    //     if (job == null) {
-    //         throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-    //     }
-    //     if (Objects.equals(job.getStatus(), StatusConstant.DISABLED)) {
-    //         throw new BusinessException(ErrorCode.STATE_ERROR, "该职位已下线");
-    //     }
-    //     Long userId = userService.getLoginUser(request).getId();
-    //     ApplicationInfo applicationInfo = applicationInfoService.getOne(new QueryWrapper<ApplicationInfo>().eq("user_id", userId));
-    //     if (applicationInfo == null) {
-    //         throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先完善个人在线简历");
-    //     }
-    //     Resume resume = resumeService.getOne(new QueryWrapper<Resume>().eq("user_id", userId));
-    //     if (resume == null) {
-    //         throw new BusinessException(ErrorCode.OPERATION_ERROR, "请先上传个人简历附件");
-    //     }
-    //     // 判断是否已经投递过该职位
-    //     ResumeRecord existResumeRecord = this.getOne(new QueryWrapper<ResumeRecord>().eq("job_id", jobId).eq("user_id", userId));
-    //     if (existResumeRecord != null) {
-    //         throw new BusinessException(ErrorCode.OPERATION_ERROR, "已投递过该职位");
-    //     }
-    //     ResumeRecord resumeRecord = new ResumeRecord();
-    //     resumeRecord.setJobId(jobId);
-    //     resumeRecord.setUserId(userId);
-    //     resumeRecord.setResumeId(resume.getId());
-    //     // 默认状态为已投递
-    //     resumeRecord.setStatus(HiringStatusConstant.APPLIED);
-    //     boolean result = this.save(resumeRecord);
-    //     if (!result) {
-    //         throw new BusinessException(ErrorCode.OPERATION_ERROR);
-    //     }
-    //     // 招聘数据投递数+1
-    //     HiringData hiringData = hiringDataService.getOne(new QueryWrapper<HiringData>().eq("job_id", jobId));
-    //     if (hiringData == null) {
-    //         throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-    //     }
-    //     hiringData.setApplicationCount(hiringData.getApplicationCount() + 1);
-    //     boolean save = hiringDataService.updateById(hiringData);
-    //     if (!save) {
-    //         throw new BusinessException(ErrorCode.OPERATION_ERROR);
-    //     }
-    //     return true;
-    // }
-
     @Override
+    @Transactional
     public Boolean addResumeRecord(ResumeRecordAddRequest resumeRecordAddRequest, HttpServletRequest request) {
         Long jobId = resumeRecordAddRequest.getJobId();
         Job job = jobService.getById(jobId);
@@ -135,6 +86,7 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         if (resume == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "简历附件不存在");
         }
+
         ResumeRecord resumeRecord = new ResumeRecord();
         resumeRecord.setJobId(jobId);
         resumeRecord.setUserId(userId);
@@ -145,6 +97,7 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
+
         // 招聘数据投递数+1
         HiringData hiringData = hiringDataService.getOne(new QueryWrapper<HiringData>().eq("job_id", jobId));
         if (hiringData == null) {
@@ -159,8 +112,9 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
     }
 
     @Override
+    @Transactional
     public Boolean updateResumeRecordStatus(ResumeRecordUpdateStatusRequest resumeRecordUpdateStatusRequest) {
-        // 招聘状态(0-已投递、1-面试中、2-面试通过、3-录用意向、4-已录用、5-流程结束)
+        // 招聘状态(0-已投递、1-面试流程中、2-面试通过、3-录用意向、4-已录用、5-流程结束)
         Long resumeRecordIdRequestId = resumeRecordUpdateStatusRequest.getId();
         ResumeRecord resumeRecord = this.getById(resumeRecordIdRequestId);
         if (resumeRecord == null) {
@@ -175,23 +129,24 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
         if (Objects.equals(resumeRecord.getStatus(), HiringStatusConstant.FINISHED)) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前流程已结束");
         }
-        if (Objects.equals(status, HiringStatusConstant.APPLIED)) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "不能修改为已投递状态");
-        }
         resumeRecord.setStatus(status);
         boolean result = this.updateById(resumeRecord);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
         }
+
         // 更新招聘数据
         Long jobId = resumeRecord.getJobId();
         HiringData hiringData = hiringDataService.getOne(new QueryWrapper<HiringData>().eq("job_id", jobId));
         if (hiringData == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
-        if (Objects.equals(status, HiringStatusConstant.INTERVIEWING)) {
-            // 面试数+1
-            hiringData.setInterviewCount(hiringData.getInterviewCount() + 1);
+        if (Objects.equals(status, HiringStatusConstant.PASSED)) {
+            // 面试通过数+1
+            hiringData.setInterviewPassCount(hiringData.getInterviewPassCount() + 1);
+        } else if (Objects.equals(status, HiringStatusConstant.INTENTION)) {
+            // 录用意向数+1
+            hiringData.setIntentionCount(hiringData.getIntentionCount() + 1);
         } else if (Objects.equals(status, HiringStatusConstant.HIRED)) {
             // 录用数+1
             hiringData.setHiredCount(hiringData.getHiredCount() + 1);

@@ -28,19 +28,34 @@ public class HiringData implements Serializable {
     private Long jobId;
 
     /**
-     * 投递量
-     */
-    private Long applicationCount;
-
-    /**
      * 收藏量
      */
     private Long favoriteCount;
 
     /**
+     * 投递量
+     */
+    private Long applicationCount;
+
+    /**
+     * 简历初筛通过量（发送面试邀请数量）
+     */
+    private Long applicationPassCount;
+
+    /**
      * 面试候选人数量
      */
     private Long interviewCount;
+
+    /**
+     * 面试通过数量
+     */
+    private Long interviewPassCount;
+
+    /**
+     * 意向数量
+     */
+    private Long intentionCount;
 
     /**
      * 录用数量

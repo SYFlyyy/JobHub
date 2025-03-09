@@ -13,7 +13,7 @@ public interface HiringStatusConstant {
     Integer APPLIED = 0;
 
     /**
-     * 面试中
+     * 面试流程中
      */
     Integer INTERVIEWING = 1;
 
