@@ -1,7 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
-import { getJobListService, addJobService, onlineJobService, offlineJobService, updateJobService } from '@/api/job'
+import { getJobListService } from '@/api/job'
+import { getRecruitDataService } from '@/api/data'
 
 const jobList = ref([])
 const loading = ref(false)
@@ -28,35 +29,9 @@ const getJobList = async () => {
   loading.value = false
 }
 
-const detailDialogVisible = ref(false)
-const jobDetail = ref({})
-const getJobById = async (id) => {
-  params.value.id = id
-  const res = await getJobListService(params.value)
-  jobDetail.value = res.data.data.records[0]
-  detailDialogVisible.value = true
-  params.value.id = ''
-}
-const handleDetailDialogClose = () => {
-  jobDetail.value = {}
-  detailDialogVisible.value = false
-}
-
 // 初始加载数据
 getJobList()
 
-const jobTypeStatus = (type) => {
-  switch (type) {
-    case 0:
-      return '全职'
-    case 1:
-      return '实习'
-    case 2:
-      return '兼职'
-    default:
-      return '未知'   // 如果是其他数字，显示 '未知'
-  }
-}
 const typeStatus = (row, column, cellValue) => {
   switch (cellValue) {
     case 0:
@@ -80,6 +55,24 @@ const handleCurrentChange = (page) => {
   params.value.current = page
   getJobList()
 }
+
+const dialogVisible = ref(false)
+const hiringData = ref({})
+const loadingHiringData = ref(false)
+
+// 获取招聘数据
+const handleGetRecruitData = async (jobId) => {
+  try {
+    loadingHiringData.value = true
+    const res = await getRecruitDataService({ id: jobId })
+    hiringData.value = res.data.data
+    dialogVisible.value = true
+  } catch (error) {
+    ElMessage.error('获取数据失败: ' + error.message)
+  } finally {
+    loadingHiringData.value = false
+  }
+}
 </script>
 
 <template>
@@ -97,34 +90,84 @@ const handleCurrentChange = (page) => {
         <template #default="{ row }">
           <el-button
             round
-            type="info"
+            type="primary"
             size="small"
             plain
-            @click="getJobById(row.id)"
-          >详情</el-button>
+            @click="handleGetRecruitData(row.id)"
+            :loading="loadingHiringData"
+          >招聘数据</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <!-- 职位详情弹窗 -->
     <el-dialog
-      v-model="detailDialogVisible"
-      :before-close="handleDetailDialogClose"
+      v-model="dialogVisible"
+      title="招聘数据分析"
+      width="800px"
     >
-      <template #default>
+      <div class="data-container">
+        <!-- 基础数据 -->
+        <el-row :gutter="20" class="data-section">
+          <el-col :span="6">
+            <div class="data-item">
+              <div class="label">职位收藏量</div>
+              <div class="value">{{ hiringData.favoriteCount || 0 }}</div>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="data-item">
+              <div class="label">投递总量</div>
+              <div class="value">{{ hiringData.applicationCount || 0 }}</div>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="data-item">
+              <div class="label">面试邀请</div>
+              <div class="value">{{ hiringData.applicationPassCount || 0 }}</div>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div class="data-item">
+              <div class="label">最终录用</div>
+              <div class="value">{{ hiringData.hiredCount || 0 }}</div>
+            </div>
+          </el-col>
+        </el-row>
+
+        <!-- 转化率数据 -->
+        <el-row :gutter="20" class="data-section rate-section">
+          <el-col :span="8">
+            <div class="rate-item">
+              <div class="label">初筛通过率</div>
+              <div class="value success">{{ hiringData.applicationPassRate || '0.00%' }}</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="rate-item">
+              <div class="label">面试通过率</div>
+              <div class="value warning">{{ hiringData.interviewPassRate || '0.00%' }}</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="rate-item">
+              <div class="label">全流程转化率</div>
+              <div class="value primary">{{ hiringData.totalConversionRate || '0.00%' }}</div>
+            </div>
+          </el-col>
+        </el-row>
+
+        <!-- 详细数据 -->
         <el-descriptions
-          title="职位详情"
-          direction="vertical"
-          :column="3"
+          title="详细数据"
+          :column="2"
           border
+          class="detail-section"
         >
-          <el-descriptions-item label-align="center" align="center" label="职位名称">{{ jobDetail.name }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="职位薪资">{{ jobDetail.salary }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="职位类型" :span="1">{{ jobTypeStatus(jobDetail.type) }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" label="职位详情" :span="4">
-            <div class="long-text">{{ jobDetail.intro }}</div>
-          </el-descriptions-item>
+          <el-descriptions-item label="面试候选人" label-align="center" align="center">{{ hiringData.interviewCount || 0 }}</el-descriptions-item>
+          <el-descriptions-item label="面试通过" label-align="center" align="center">{{ hiringData.interviewPassCount || 0 }}</el-descriptions-item>
+          <el-descriptions-item label="录用意向" label-align="center" align="center">{{ hiringData.intentionCount || 0 }}</el-descriptions-item>
+          <el-descriptions-item label="最终录用率" label-align="center" align="center">{{ hiringData.hiredPassRate || '0.00%' }}</el-descriptions-item>
         </el-descriptions>
-      </template>
+      </div>
     </el-dialog>
     <el-pagination
       v-model:current-page="params.current"
@@ -139,6 +182,67 @@ const handleCurrentChange = (page) => {
   </page-container>
 </template>
 
-<style>
+<style lang="scss" scoped>
+.data-container {
+  padding: 20px;
+}
 
+.data-section {
+  margin-bottom: 30px;
+}
+
+.data-item {
+  text-align: center;
+  padding: 15px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  .label {
+    color: #909399;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #303133;
+  }
+}
+
+.rate-section {
+  .rate-item {
+    text-align: center;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    .label {
+      color: #909399;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .value {
+      font-size: 20px;
+      font-weight: bold;
+      &.success { color: #67c23a; }
+      &.warning { color: #e6a23c; }
+      &.primary { color: #409eff; }
+    }
+  }
+}
+
+:deep(.el-descriptions__body .el-descriptions__table) {
+  table-layout: fixed !important;
+}
+
+:deep(.el-descriptions__body .el-descriptions__table tbody td) {
+  width: 50%;
+  min-width: 50%;
+}
+
+:deep(.el-descriptions-item__label),
+:deep(.el-descriptions-item__content) {
+  flex: 1;
+  min-width: 150px;
+  justify-content: center;
+}
 </style>
