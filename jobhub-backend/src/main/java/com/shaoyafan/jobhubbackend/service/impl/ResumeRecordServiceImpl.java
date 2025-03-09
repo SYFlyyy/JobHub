@@ -121,6 +121,9 @@ public class ResumeRecordServiceImpl extends ServiceImpl<ResumeRecordMapper, Res
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         Integer currentStatus = resumeRecord.getStatus();
+        if (Objects.equals(currentStatus, HiringStatusConstant.FINISHED)) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "当前招聘流程已结束");
+        }
         // 需要更新的状态
         Integer status = resumeRecordUpdateStatusRequest.getStatus();
         if (status <= currentStatus) {

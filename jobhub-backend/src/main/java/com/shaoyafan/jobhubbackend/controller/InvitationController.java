@@ -1,12 +1,18 @@
 package com.shaoyafan.jobhubbackend.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shaoyafan.jobhubbackend.annotation.AuthCheck;
 import com.shaoyafan.jobhubbackend.common.BaseResponse;
 import com.shaoyafan.jobhubbackend.common.ErrorCode;
+import com.shaoyafan.jobhubbackend.constant.RoleConstant;
 import com.shaoyafan.jobhubbackend.exception.BusinessException;
+import com.shaoyafan.jobhubbackend.model.domain.Invitation;
+import com.shaoyafan.jobhubbackend.model.domain.User;
 import com.shaoyafan.jobhubbackend.model.dto.invitation.InvitationAddRequest;
 import com.shaoyafan.jobhubbackend.model.dto.invitation.InvitationIdRequest;
+import com.shaoyafan.jobhubbackend.model.dto.invitation.InvitationQueryRequest;
 import com.shaoyafan.jobhubbackend.service.InvitationService;
+import com.shaoyafan.jobhubbackend.service.UserService;
 import com.shaoyafan.jobhubbackend.utils.ResultUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * 面试邀请接口
@@ -32,6 +39,9 @@ public class InvitationController {
 
     @Resource
     private InvitationService invitationService;
+
+    @Resource
+    private UserService userService;
 
     /**
      * 新增面试邀请
@@ -84,4 +94,31 @@ public class InvitationController {
         Boolean result = invitationService.rejectInvitation(invitationIdRequest, request);
         return ResultUtils.success(result);
     }
+
+    /**
+     * 分页获取面试邀请列表
+     *
+     * @param invitationQueryRequest
+     * @return
+     */
+    @PostMapping("/list/page")
+    @ApiOperation("分页获取面试邀请列表")
+    public BaseResponse<Page<Invitation>> getInvitationListPage(@RequestBody InvitationQueryRequest invitationQueryRequest, HttpServletRequest request) {
+        if (invitationQueryRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        User loginUser = userService.getLoginUser(request);
+        // 根据用户角色设置查询条件
+        if (Objects.equals(loginUser.getRole(), RoleConstant.CANDIDATE_ROLE)) {
+            invitationQueryRequest.setCanId(loginUser.getId());
+        } else if (Objects.equals(loginUser.getRole(), RoleConstant.RECRUITER_ROLE)) {
+            invitationQueryRequest.setRecId(loginUser.getId());
+        }
+        long current = invitationQueryRequest.getCurrent();
+        long size = invitationQueryRequest.getPageSize();
+        Page<Invitation> page = invitationService.page(new Page<>(current, size),
+                invitationService.getInvitationQueryWrapper(invitationQueryRequest));
+        return ResultUtils.success(page);
+    }
+
 }

@@ -4,7 +4,7 @@ import PageContainer from '@/views/layout/PageContainer.vue'
 import { getResumeRecordService, updateResumeRecordService } from '@/api/resumeRecord'
 import { getApplicationInfoService } from '@/api/applicationInfo'
 import { getResumePathServie } from '@/api/resume'
-import dayjs from 'dayjs'
+import { addInvitationService } from '@/api/invitation'
 
 const resumeRecordList = ref([])
 const loading = ref(false)
@@ -114,6 +114,36 @@ const updateStatus = async () => {
     getResumeRecordList()
   }
 }
+
+const invitationDialogVisible = ref(false)
+const invitationForm = ref({
+  canId: '',    // 求职者ID
+  jobId: '',    // 职位ID
+  message: ''   // 邀请信息
+})
+
+// 打开弹窗并初始化数据
+const handleInvitation = (row) => {
+  invitationDialogVisible.value = true
+  invitationForm.value = {
+    canId: row.userId,  // 根据你的数据结构调整字段名
+    jobId: row.jobId,   // 确保resumeRecordList包含jobId字段
+    message: ''
+  }
+}
+
+const submitInvitation = async () => {
+  // 表单验证
+  if (!invitationForm.value.message.trim()) {
+    ElMessage.warning('请输入邀请内容')
+    return
+  }
+
+  await addInvitationService(invitationForm.value)
+  ElMessage.success('邀请发送成功')
+  invitationDialogVisible.value = false
+  invitationForm.value.message = '' // 清空表单内容
+}
 </script>
 
 <template>
@@ -127,7 +157,7 @@ const updateStatus = async () => {
       <el-table-column prop="jobName" label="职位名称" align="center"></el-table-column>
       <el-table-column prop="userName" label="求职者" align="center"></el-table-column>
       <el-table-column prop="status" label="状态" :formatter="formatStatus" align="center"></el-table-column>
-      <el-table-column label="操作" width="300" align="center">
+      <el-table-column label="简历" width="230" align="center">
         <template #default="{ row }">
           <el-button
             round
@@ -143,6 +173,17 @@ const updateStatus = async () => {
             plain
             @click="handleGetResume(row.resumeId)"
           >简历附件</el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="230" align="center">
+        <template #default="{ row }">
+          <el-button
+            round
+            type="danger"
+            size="small"
+            plain
+            @click="handleInvitation(row)"
+          >面试邀请</el-button>
           <el-button
             round
             type="warning"
@@ -153,6 +194,29 @@ const updateStatus = async () => {
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog
+      v-model="invitationDialogVisible"
+      title="发送面试邀请"
+      width="40%"
+      @closed="invitationForm.message = ''"
+    >
+      <el-form :model="invitationForm" label-width="100px">
+        <el-form-item label="填写内容" required>
+          <el-input
+            v-model="invitationForm.message"
+            type="textarea"
+            :rows="5"
+            placeholder="请输入面试时间、地点、注意事项等信息"
+            clearable
+            style="width: 450px"
+          />
+        </el-form-item>
+      </el-form>
+      <div class="dialog-footer">
+        <el-button @click="invitationDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitInvitation">发送邀请</el-button>
+      </div>
+    </el-dialog>
     <el-dialog
       v-model="applicationInfoDialogVisible"
       title="在线简历"

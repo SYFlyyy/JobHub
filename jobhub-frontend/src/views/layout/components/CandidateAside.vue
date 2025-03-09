@@ -10,7 +10,8 @@ import {
   EditPen,
   Tickets,
   MessageBox,
-  Bell
+  Bell,
+  Star,
 } from '@element-plus/icons-vue'
 </script>
 
@@ -43,6 +44,11 @@ import {
       <el-menu-item index="/record/candidate">
         <el-icon><Message /></el-icon>
         <span>投递记录</span>
+      </el-menu-item>
+      <!-- 面试通知 -->
+      <el-menu-item index="/invitation/candidate">
+        <el-icon><Star /></el-icon>
+        <span>面试通知</span>
       </el-menu-item>
       <!-- 个人简历 -->
       <el-menu-item index="/candidate/application">

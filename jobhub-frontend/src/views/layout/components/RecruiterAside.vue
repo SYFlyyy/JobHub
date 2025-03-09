@@ -9,7 +9,8 @@ import {
   Message,
   DataAnalysis,
   MessageBox,
-  Bell
+  Bell,
+  Star
 } from '@element-plus/icons-vue'
 </script>
 
@@ -37,6 +38,11 @@ import {
       <el-menu-item index="/record/recruiter">
         <el-icon><Message /></el-icon>
         <span>招聘记录</span>
+      </el-menu-item>
+      <!-- 面试邀请 -->
+      <el-menu-item index="/invitation/recruiter">
+        <el-icon><Star /></el-icon>
+        <span>面试邀请</span>
       </el-menu-item>
       <!-- 招聘数据 -->
       <el-menu-item index="/data/resumeData">
