@@ -232,8 +232,7 @@ const handleEditDialogClose = () => {
           <template #header>
             <div class="card-header">
               <el-button type="primary" @click="register">注册企业</el-button>
-              <el-button type="info" @click="openEditDialog">编辑企业信息</el-button>
-              <el-button type="success">绑定企业</el-button>
+              <el-button type="success" @click="openEditDialog">编辑企业信息</el-button>
             </div>
           </template>
           <el-form :model="companyInfo" label-width="120px" size="large" class="companyInfo-form">
