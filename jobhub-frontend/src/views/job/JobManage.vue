@@ -1,7 +1,13 @@
 <script setup>
 import { ref } from 'vue'
 import PageContainer from '@/views/layout/PageContainer.vue'
-import { getJobListService, addJobService, onlineJobService, offlineJobService, updateJobService } from '@/api/job'
+import {
+  getJobListService,
+  addJobService,
+  onlineJobService,
+  offlineJobService,
+  updateJobService,
+} from '@/api/job'
 
 const jobList = ref([])
 const loading = ref(false)
@@ -15,7 +21,7 @@ const params = ref({
   intro: '',
   status: '', // 默认查询待审核
   pageSize: 5,
-  current: 1
+  current: 1,
 })
 
 const total = ref(0)
@@ -48,15 +54,15 @@ getJobList()
 const formatStatus = (row, column, cellValue) => {
   switch (cellValue) {
     case 0:
-      return '上线'   // 对应数字 0 显示 '正常'
+      return '上线' // 对应数字 0 显示 '正常'
     case 1:
-      return '下线'   // 对应数字 1 显示 '禁用'
+      return '下线' // 对应数字 1 显示 '禁用'
     case 2:
       return '待审核' // 对应数字 2 显示 '待审核'
     case 3:
       return '审核通过' // 对应数字 3 显示 '审核通过'
     default:
-      return '未知'   // 如果是其他数字，显示 '未知'
+      return '未知' // 如果是其他数字，显示 '未知'
   }
 }
 const typeStatus = (row, column, cellValue) => {
@@ -68,7 +74,7 @@ const typeStatus = (row, column, cellValue) => {
     case 2:
       return '兼职'
     default:
-      return '未知'   // 如果是其他数字，显示 '未知'
+      return '未知' // 如果是其他数字，显示 '未知'
   }
 }
 const jobTypeStatus = (type) => {
@@ -80,7 +86,7 @@ const jobTypeStatus = (type) => {
     case 2:
       return '兼职'
     default:
-      return '未知'   // 如果是其他数字，显示 '未知'
+      return '未知' // 如果是其他数字，显示 '未知'
   }
 }
 const onlineJob = async (id) => {
@@ -126,19 +132,19 @@ const addJobForm = ref({
   maxSalary: null,
   salaryUnit: null,
   periodUnit: null,
-  intro: ''
+  intro: '',
 })
 
 const salaryUnitOptions = [
   { label: '元', value: 0 },
   { label: '千元/k', value: 1 },
-  { label: '万元/w', value: 2 }
+  { label: '万元/w', value: 2 },
 ]
 
 const periodUnitOptions = [
   { label: '天', value: 0 },
   { label: '月', value: 1 },
-  { label: '年', value: 2 }
+  { label: '年', value: 2 },
 ]
 
 const addDialogVisible = ref(false)
@@ -147,13 +153,11 @@ const addJob = () => {
 }
 const handleAddJob = async () => {
   // 表单验证
-  if (!addJobForm.value.minSalary ||
-      addJobForm.value.minSalary < 0) {
+  if (!addJobForm.value.minSalary || addJobForm.value.minSalary < 0) {
     return ElMessage.warning('请输入有效的薪资下限')
   }
 
-  if (addJobForm.value.maxSalary &&
-      addJobForm.value.maxSalary < addJobForm.value.minSalary) {
+  if (addJobForm.value.maxSalary && addJobForm.value.maxSalary < addJobForm.value.minSalary) {
     return ElMessage.warning('薪资上限不能低于下限')
   }
 
@@ -174,12 +178,21 @@ const handleAddJob = async () => {
     ...addJobForm.value,
     // 确保数值类型正确
     minSalary: Number(addJobForm.value.minSalary),
-    maxSalary: Number(addJobForm.value.maxSalary) || null
+    maxSalary: Number(addJobForm.value.maxSalary) || null,
   })
   if (res.data.data) {
     ElMessage.success('新增成功')
     addDialogVisible.value = false
     getJobList()
+    addJobForm.value = {
+      name: '',
+      type: '',
+      minSalary: null,
+      maxSalary: null,
+      salaryUnit: null,
+      periodUnit: null,
+      intro: '',
+    }
   } else {
     ElMessage.error('新增失败')
   }
@@ -189,7 +202,7 @@ const handleAddDialogClose = () => {
     name: '',
     type: '',
     salary: '',
-    intro: ''
+    intro: '',
   }
   addDialogVisible.value = false
 }
@@ -203,7 +216,7 @@ const editJobForm = ref({
   maxSalary: null,
   salaryUnit: null,
   periodUnit: null,
-  intro: ''
+  intro: '',
 })
 
 // 获取职位详情用于编辑
@@ -221,7 +234,7 @@ const getJobByIdForEdit = async (id) => {
     maxSalary: data.maxSalary,
     salaryUnit: data.salaryUnit,
     periodUnit: data.periodUnit,
-    intro: data.intro
+    intro: data.intro,
   }
   editDialogVisible.value = true
   params.value.id = ''
@@ -234,13 +247,11 @@ const updateJob = (id) => {
 
 // 提交编辑
 const handleEditJob = async () => {
-  if (!editJobForm.value.minSalary ||
-      editJobForm.value.minSalary < 0) {
+  if (!editJobForm.value.minSalary || editJobForm.value.minSalary < 0) {
     return ElMessage.warning('请输入有效的薪资下限')
   }
 
-  if (editJobForm.value.maxSalary &&
-      editJobForm.value.maxSalary < editJobForm.value.minSalary) {
+  if (editJobForm.value.maxSalary && editJobForm.value.maxSalary < editJobForm.value.minSalary) {
     return ElMessage.warning('薪资上限不能低于下限')
   }
 
@@ -261,7 +272,7 @@ const handleEditJob = async () => {
   const res = await updateJobService({
     ...editJobForm.value,
     minSalary: Number(editJobForm.value.minSalary),
-    maxSalary: Number(editJobForm.value.maxSalary) || null
+    maxSalary: Number(editJobForm.value.maxSalary) || null,
   })
   if (res.data.data) {
     ElMessage.success('修改成功')
@@ -282,7 +293,7 @@ const handleEditDialogClose = () => {
     maxSalary: null,
     salaryUnit: null,
     periodUnit: null,
-    intro: ''
+    intro: '',
   }
   editDialogVisible.value = false
 }
@@ -297,42 +308,41 @@ const handleEditDialogClose = () => {
       <el-button type="primary" @click="addJob">新增职位</el-button>
     </template>
 
-    <el-table v-loading="loading" :data="jobList" style="width: 100%" :row-style="{ height: '60px' }">
+    <el-table
+      v-loading="loading"
+      :data="jobList"
+      style="width: 100%"
+      :row-style="{ height: '60px' }"
+    >
       <el-table-column label="序号" width="100" type="index" align="center"></el-table-column>
       <el-table-column prop="name" label="职位名称" align="center"></el-table-column>
-      <el-table-column prop="type" label="职位类型" :formatter="typeStatus" align="center"></el-table-column>
+      <el-table-column
+        prop="type"
+        label="职位类型"
+        :formatter="typeStatus"
+        align="center"
+      ></el-table-column>
       <el-table-column prop="salary" label="薪资" align="center"></el-table-column>
-      <el-table-column prop="status" label="状态" :formatter="formatStatus" align="center"></el-table-column>
+      <el-table-column
+        prop="status"
+        label="状态"
+        :formatter="formatStatus"
+        align="center"
+      ></el-table-column>
       <el-table-column label="操作" width="260" align="center">
         <template #default="{ row }">
-          <el-button
-            round
-            type="info"
-            size="small"
-            plain
-            @click="getJobById(row.id)"
-          >详情</el-button>
-          <el-button
-            round
-            type="primary"
-            size="small"
-            plain
-            @click="updateJob(row.id)"
-          >编辑</el-button>
-          <el-button
-            round
-            type="success"
-            size="small"
-            plain
-            @click="onlineJob(row.id)"
-          >上线</el-button>
-          <el-button
-            round
-            type="danger"
-            size="small"
-            plain
-            @click="offlineJob(row.id)"
-          >下线</el-button>
+          <el-button round type="info" size="small" plain @click="getJobById(row.id)"
+            >详情</el-button
+          >
+          <el-button round type="primary" size="small" plain @click="updateJob(row.id)"
+            >编辑</el-button
+          >
+          <el-button round type="success" size="small" plain @click="onlineJob(row.id)"
+            >上线</el-button
+          >
+          <el-button round type="danger" size="small" plain @click="offlineJob(row.id)"
+            >下线</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -349,7 +359,13 @@ const handleEditDialogClose = () => {
             <el-input v-model="addJobForm.name" placeholder="请输入职位名称" clearable></el-input>
           </el-form-item>
           <el-form-item label="职位详情">
-            <el-input v-model="addJobForm.intro" type="textarea" placeholder="请输入职位详情" clearable class="textarea-input"></el-input>
+            <el-input
+              v-model="addJobForm.intro"
+              type="textarea"
+              placeholder="请输入职位详情"
+              clearable
+              class="textarea-input"
+            ></el-input>
           </el-form-item>
           <el-form-item label="薪资范围">
             <div class="salary-input-group">
@@ -357,19 +373,19 @@ const handleEditDialogClose = () => {
                 v-model="addJobForm.minSalary"
                 :min="0"
                 placeholder="最低薪资"
-                style="width: 150px;"
+                style="width: 150px"
               />
               <span class="separator">-</span>
               <el-input-number
                 v-model="addJobForm.maxSalary"
                 :min="addJobForm.minSalary || 0"
                 placeholder="最高薪资"
-                style="width: 150px;"
+                style="width: 150px"
               />
               <el-select
                 v-model="addJobForm.salaryUnit"
                 placeholder="单位"
-                style="width: 100px; margin-left: 10px;"
+                style="width: 100px; margin-left: 10px"
               >
                 <el-option
                   v-for="unit in salaryUnitOptions"
@@ -379,11 +395,7 @@ const handleEditDialogClose = () => {
                 />
               </el-select>
               <span class="separator">/</span>
-              <el-select
-                v-model="addJobForm.periodUnit"
-                placeholder="周期"
-                style="width: 90px;"
-              >
+              <el-select v-model="addJobForm.periodUnit" placeholder="周期" style="width: 90px">
                 <el-option
                   v-for="period in periodUnitOptions"
                   :key="period.value"
@@ -413,20 +425,18 @@ const handleEditDialogClose = () => {
       </template>
     </el-dialog>
     <!-- 职位详情弹窗 -->
-    <el-dialog
-      v-model="detailDialogVisible"
-      :before-close="handleDetailDialogClose"
-    >
+    <el-dialog v-model="detailDialogVisible" :before-close="handleDetailDialogClose">
       <template #default>
-        <el-descriptions
-          title="职位详情"
-          direction="vertical"
-          :column="3"
-          border
-        >
-          <el-descriptions-item label-align="center" align="center" label="职位名称">{{ jobDetail.name }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="职位薪资">{{ jobDetail.salary }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="职位类型" :span="1">{{ jobTypeStatus(jobDetail.type) }}</el-descriptions-item>
+        <el-descriptions title="职位详情" direction="vertical" :column="3" border>
+          <el-descriptions-item label-align="center" align="center" label="职位名称">{{
+            jobDetail.name
+          }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="职位薪资">{{
+            jobDetail.salary
+          }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="职位类型" :span="1">{{
+            jobTypeStatus(jobDetail.type)
+          }}</el-descriptions-item>
           <el-descriptions-item label-align="center" label="职位详情" :span="4">
             <div class="long-text">{{ jobDetail.intro }}</div>
           </el-descriptions-item>
@@ -460,19 +470,19 @@ const handleEditDialogClose = () => {
                 v-model="editJobForm.minSalary"
                 :min="0"
                 placeholder="最低薪资"
-                style="width: 150px;"
+                style="width: 150px"
               />
               <span class="separator">-</span>
               <el-input-number
                 v-model="editJobForm.maxSalary"
                 :min="editJobForm.minSalary || 0"
                 placeholder="最高薪资"
-                style="width: 150px;"
+                style="width: 150px"
               />
               <el-select
                 v-model="editJobForm.salaryUnit"
                 placeholder="单位"
-                style="width: 100px; margin-left: 10px;"
+                style="width: 100px; margin-left: 10px"
               >
                 <el-option
                   v-for="unit in salaryUnitOptions"
@@ -482,11 +492,7 @@ const handleEditDialogClose = () => {
                 />
               </el-select>
               <span class="separator">/</span>
-              <el-select
-                v-model="editJobForm.periodUnit"
-                placeholder="周期"
-                style="width: 90px;"
-              >
+              <el-select v-model="editJobForm.periodUnit" placeholder="周期" style="width: 90px">
                 <el-option
                   v-for="period in periodUnitOptions"
                   :key="period.value"

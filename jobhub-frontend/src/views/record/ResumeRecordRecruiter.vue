@@ -5,12 +5,13 @@ import { getResumeRecordService, updateResumeRecordService } from '@/api/resumeR
 import { getApplicationInfoService } from '@/api/applicationInfo'
 import { getResumePathServie } from '@/api/resume'
 import { addInvitationService } from '@/api/invitation'
+import dayjs from 'dayjs'
 
 const resumeRecordList = ref([])
 const loading = ref(false)
 const params = ref({
   pageSize: 5,
-  current: 1
+  current: 1,
 })
 
 const total = ref(0)
@@ -28,9 +29,9 @@ getResumeRecordList()
 const formatStatus = (row, column, cellValue) => {
   switch (cellValue) {
     case 0:
-      return '已投递'   // 对应数字 0 显示 '已投递'
+      return '已投递' // 对应数字 0 显示 '已投递'
     case 1:
-      return '面试流程中'   // 对应数字 1 显示 '面试流程中'
+      return '面试流程中' // 对应数字 1 显示 '面试流程中'
     case 2:
       return '面试通过' // 对应数字 2 显示 '待审核'
     case 3:
@@ -40,7 +41,7 @@ const formatStatus = (row, column, cellValue) => {
     case 5:
       return '流程结束' // 对应数字 3 显示 '流程结束'
     default:
-      return '未知'   // 如果是其他数字，显示 '未知'
+      return '未知' // 如果是其他数字，显示 '未知'
   }
 }
 
@@ -58,7 +59,7 @@ const handleCurrentChange = (page) => {
 const applicationInfoDialogVisible = ref(false)
 const applicationInfo = ref({})
 const applicationInfoFrom = ref({
-  id: ''
+  id: '',
 })
 const handleGetApplicationInfo = async (id) => {
   applicationInfoFrom.value.id = id
@@ -74,7 +75,7 @@ const formatDate = (date) => {
 
 const resumePath = ref('')
 const resumePathFrom = ref({
-  id: ''
+  id: '',
 })
 const handleGetResume = async (id) => {
   resumePathFrom.value.id = id
@@ -86,7 +87,7 @@ const handleGetResume = async (id) => {
 const statusDialogVisible = ref(false)
 const statusForm = ref({
   id: '',
-  status: ''
+  status: '',
 })
 const handleUpdateStatus = (id) => {
   statusDialogVisible.value = true
@@ -117,18 +118,18 @@ const updateStatus = async () => {
 
 const invitationDialogVisible = ref(false)
 const invitationForm = ref({
-  canId: '',    // 求职者ID
-  jobId: '',    // 职位ID
-  message: ''   // 邀请信息
+  canId: '', // 求职者ID
+  jobId: '', // 职位ID
+  message: '', // 邀请信息
 })
 
 // 打开弹窗并初始化数据
 const handleInvitation = (row) => {
   invitationDialogVisible.value = true
   invitationForm.value = {
-    canId: row.userId,  // 根据你的数据结构调整字段名
-    jobId: row.jobId,   // 确保resumeRecordList包含jobId字段
-    message: ''
+    canId: row.userId, // 根据你的数据结构调整字段名
+    jobId: row.jobId, // 确保resumeRecordList包含jobId字段
+    message: '',
   }
 }
 
@@ -152,11 +153,21 @@ const submitInvitation = async () => {
       <div>招聘记录</div>
     </template>
 
-    <el-table v-loading="loading" :data="resumeRecordList" style="width: 100%" :row-style="{ height: '60px' }">
+    <el-table
+      v-loading="loading"
+      :data="resumeRecordList"
+      style="width: 100%"
+      :row-style="{ height: '60px' }"
+    >
       <el-table-column label="序号" width="100" type="index" align="center"></el-table-column>
       <el-table-column prop="jobName" label="职位名称" align="center"></el-table-column>
       <el-table-column prop="userName" label="求职者" align="center"></el-table-column>
-      <el-table-column prop="status" label="状态" :formatter="formatStatus" align="center"></el-table-column>
+      <el-table-column
+        prop="status"
+        label="状态"
+        :formatter="formatStatus"
+        align="center"
+      ></el-table-column>
       <el-table-column label="简历" width="230" align="center">
         <template #default="{ row }">
           <el-button
@@ -165,32 +176,21 @@ const submitInvitation = async () => {
             size="small"
             plain
             @click="handleGetApplicationInfo(row.userId)"
-          >在线简历</el-button>
-          <el-button
-            round
-            type="success"
-            size="small"
-            plain
-            @click="handleGetResume(row.resumeId)"
-          >简历附件</el-button>
+            >在线简历</el-button
+          >
+          <el-button round type="success" size="small" plain @click="handleGetResume(row.resumeId)"
+            >简历附件</el-button
+          >
         </template>
       </el-table-column>
       <el-table-column label="操作" width="230" align="center">
         <template #default="{ row }">
-          <el-button
-            round
-            type="danger"
-            size="small"
-            plain
-            @click="handleInvitation(row)"
-          >面试邀请</el-button>
-          <el-button
-            round
-            type="warning"
-            size="small"
-            plain
-            @click="handleUpdateStatus(row.id)"
-          >更新状态</el-button>
+          <el-button round type="danger" size="small" plain @click="handleInvitation(row)"
+            >面试邀请</el-button
+          >
+          <el-button round type="warning" size="small" plain @click="handleUpdateStatus(row.id)"
+            >更新状态</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -217,13 +217,14 @@ const submitInvitation = async () => {
         <el-button type="primary" @click="submitInvitation">发送邀请</el-button>
       </div>
     </el-dialog>
-    <el-dialog
-      v-model="applicationInfoDialogVisible"
-      title="在线简历"
-      width="40%"
-    >
+    <el-dialog v-model="applicationInfoDialogVisible" title="在线简历" width="40%">
       <template #default>
-        <el-form :model="applicationInfo" label-width="120px" size="large" class="applicationInfo-form">
+        <el-form
+          :model="applicationInfo"
+          label-width="120px"
+          size="large"
+          class="applicationInfo-form"
+        >
           <el-form-item label="姓名">
             <div>{{ applicationInfo.name }}</div>
           </el-form-item>
@@ -275,7 +276,12 @@ const submitInvitation = async () => {
       <template #default>
         <el-form :model="statusForm" label-width="100px" size="large" class="status-form">
           <el-form-item label="招聘状态">
-            <el-select v-model="statusForm.status" placeholder="请选择招聘状态" style="width: 500px" clearable>
+            <el-select
+              v-model="statusForm.status"
+              placeholder="请选择招聘状态"
+              style="width: 500px"
+              clearable
+            >
               <el-option label="面试通过" value="2"></el-option>
               <el-option label="录用意向" value="3"></el-option>
               <el-option label="已录用" value="4"></el-option>

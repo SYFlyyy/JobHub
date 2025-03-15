@@ -8,7 +8,7 @@ import PageContainer from '../layout/PageContainer.vue'
 const pwdForm = ref({
   oldPassword: '',
   newPassword: '',
-  checkPassword: ''
+  checkPassword: '',
 })
 const formRef = ref()
 const router = useRouter()
@@ -24,7 +24,7 @@ const checkOldSame = (rule, value, cb) => {
 
 const checkNewSame = (rule, value, cb) => {
   if (value !== pwdForm.value.newPassword) {
-    cb(new Error('新密码和确认再次输入的新密码不一样!'))
+    cb(new Error('新密码和确认新密码不一样!'))
   } else {
     cb()
   }
@@ -36,8 +36,8 @@ const rules = {
     {
       pattern: /^\S{8,15}$/,
       message: '密码长度必须是8-15位的非空字符串',
-      trigger: 'blur'
-    }
+      trigger: 'blur',
+    },
   ],
   // 新密码
   newPassword: [
@@ -45,9 +45,9 @@ const rules = {
     {
       pattern: /^\S{8,15}$/,
       message: '密码长度必须是8-15位的非空字符串',
-      trigger: 'blur'
+      trigger: 'blur',
     },
-    { validator: checkOldSame, trigger: 'blur' }
+    { validator: checkOldSame, trigger: 'blur' },
   ],
   // 确认新密码
   checkPassword: [
@@ -55,10 +55,10 @@ const rules = {
     {
       pattern: /^\S{8,15}$/,
       message: '密码长度必须是8-15位的非空字符串',
-      trigger: 'blur'
+      trigger: 'blur',
     },
-    { validator: checkNewSame, trigger: 'blur' }
-  ]
+    { validator: checkNewSame, trigger: 'blur' },
+  ],
 }
 
 const onSubmit = async () => {
@@ -82,13 +82,7 @@ const onReset = () => {
     </template>
     <el-row>
       <el-col :span="12">
-        <el-form
-          :model="pwdForm"
-          :rules="rules"
-          ref="formRef"
-          label-width="100px"
-          size="large"
-        >
+        <el-form :model="pwdForm" :rules="rules" ref="formRef" label-width="100px" size="large">
           <el-form-item label="原密码" prop="oldPassword">
             <el-input v-model="pwdForm.oldPassword" type="password"></el-input>
           </el-form-item>

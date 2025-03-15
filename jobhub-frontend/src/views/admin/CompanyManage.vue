@@ -18,7 +18,7 @@ const params = ref({
   logo: '',
   status: '',
   pageSize: 5,
-  current: 1
+  current: 1,
 })
 
 const getCompanyList = async () => {
@@ -49,15 +49,15 @@ getCompanyList()
 const formatStatus = (row, column, cellValue) => {
   switch (cellValue) {
     case 0:
-      return '正常'   // 对应数字 0 显示 '正常'
+      return '正常' // 对应数字 0 显示 '正常'
     case 1:
-      return '冻结'   // 对应数字 1 显示 '禁用'
+      return '冻结' // 对应数字 1 显示 '禁用'
     case 2:
       return '待审核' // 对应数字 2 显示 '待审核'
     case 3:
       return '审核通过' // 对应数字 3 显示 '审核通过'
     default:
-      return '未知'   // 如果是其他数字，显示 '未知'
+      return '未知' // 如果是其他数字，显示 '未知'
   }
 }
 const reviewCompany = async (id) => {
@@ -74,7 +74,7 @@ const reviewCompany = async (id) => {
 }
 
 const freezeUser = async (id) => {
-  await ElMessageBox.confirm('确认冻结通过该企业吗？', '温馨提示', {
+  await ElMessageBox.confirm('确认冻结该企业吗？', '温馨提示', {
     type: 'warning',
     confirmButtonText: '确认',
     cancelButtonText: '取消',
@@ -122,16 +122,11 @@ const resetParams = () => {
       <el-form-item label="地址：">
         <el-input v-model="params.address" placeholder="请输入" clearable />
       </el-form-item>
-        <el-form-item label="类型：">
-      <el-input v-model="params.type" placeholder="请输入" clearable />
-        </el-form-item>
+      <el-form-item label="类型：">
+        <el-input v-model="params.type" placeholder="请输入" clearable />
+      </el-form-item>
       <el-form-item label="规模：">
-        <el-select
-          v-model="params.size"
-          placeholder="请选择"
-          style="width: 192px"
-          clearable
-        >
+        <el-select v-model="params.size" placeholder="请选择" style="width: 192px" clearable>
           <el-option label="0-20人" value="0-20人"></el-option>
           <el-option label="21-99人" value="21-99人"></el-option>
           <el-option label="100-499人" value="100-499人"></el-option>
@@ -141,12 +136,7 @@ const resetParams = () => {
         </el-select>
       </el-form-item>
       <el-form-item label="状态：">
-        <el-select
-          v-model="params.status"
-          placeholder="请选择"
-          style="width: 192px"
-          clearable
-        >
+        <el-select v-model="params.status" placeholder="请选择" style="width: 192px" clearable>
           <el-option label="正常" value="0"></el-option>
           <el-option label="冻结" value="1"></el-option>
           <el-option label="待审核" value="2"></el-option>
@@ -158,7 +148,12 @@ const resetParams = () => {
       </el-form-item>
     </el-form>
 
-    <el-table v-loading="loading" :data="companyList" style="width: 100%" :row-style="{ height: '60px' }">
+    <el-table
+      v-loading="loading"
+      :data="companyList"
+      style="width: 100%"
+      :row-style="{ height: '60px' }"
+    >
       <el-table-column label="序号" width="100" type="index" align="center"></el-table-column>
       <el-table-column prop="name" label="企业名称" align="center"></el-table-column>
       <el-table-column prop="logo" label="企业logo" align="center">
@@ -169,59 +164,47 @@ const resetParams = () => {
       <el-table-column prop="address" label="地址" align="center"></el-table-column>
       <el-table-column prop="type" label="企业类型" align="center"></el-table-column>
       <el-table-column prop="size" label="企业规模" align="center"></el-table-column>
-      <el-table-column prop="status" label="状态" :formatter="formatStatus" align="center"></el-table-column>
+      <el-table-column
+        prop="status"
+        label="状态"
+        :formatter="formatStatus"
+        align="center"
+      ></el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template #default="{ row }">
-          <el-button
-            round
-            type="info"
-            size="small"
-            plain
-            @click="getCompanyById(row.id)"
-          >详情</el-button>
-          <el-button
-            round
-            type="primary"
-            size="small"
-            plain
-            @click="reviewCompany(row.id)"
-          >审核</el-button>
-          <el-button
-            round
-            type="danger"
-            size="small"
-            plain
-            @click="freezeUser(row.id)"
-          >冻结</el-button>
+          <el-button round type="info" size="small" plain @click="getCompanyById(row.id)"
+            >详情</el-button
+          >
+          <el-button round type="primary" size="small" plain @click="reviewCompany(row.id)"
+            >审核</el-button
+          >
+          <el-button round type="danger" size="small" plain @click="freezeUser(row.id)"
+            >冻结</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog
-      v-model="dialogVisible"
-      :before-close="handleDialogClose"
-    >
+    <el-dialog v-model="dialogVisible" :before-close="handleDialogClose">
       <template #default>
-        <el-descriptions
-          title="企业详情"
-          direction="vertical"
-          border
-          style="margin-top: 20px"
-        >
-          <el-descriptions-item
-            :rowspan="2"
-            :width="140"
-            label="企业logo"
-            align="center"
-          >
+        <el-descriptions title="企业详情" direction="vertical" border style="margin-top: 20px">
+          <el-descriptions-item :rowspan="2" :width="140" label="企业logo" align="center">
             <el-image
               style="width: 100px; height: 100px"
               :src="'http://localhost:8080/jobhub/' + companyDetail.logo"
             />
           </el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="企业名称">{{ companyDetail.name }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="企业地址">{{ companyDetail.address }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="企业类型">{{ companyDetail.type }}</el-descriptions-item>
-          <el-descriptions-item label-align="center" align="center" label="企业规模">{{ companyDetail.size }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="企业名称">{{
+            companyDetail.name
+          }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="企业地址">{{
+            companyDetail.address
+          }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="企业类型">{{
+            companyDetail.type
+          }}</el-descriptions-item>
+          <el-descriptions-item label-align="center" align="center" label="企业规模">{{
+            companyDetail.size
+          }}</el-descriptions-item>
           <el-descriptions-item label-align="center" label="企业介绍">
             <div class="long-text">{{ companyDetail.intro }}</div>
           </el-descriptions-item>
